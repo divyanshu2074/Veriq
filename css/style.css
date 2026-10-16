@@ -2298,3 +2298,206 @@ ol {
     transform: translateY(0);
   }
 }
+
+/* --------------------------------------------------------------------------
+   28. Unified 148 Tests Matrix & Number Badges
+   -------------------------------------------------------------------------- */
+.test-num-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #1E293B;
+  color: #38BDF8;
+  border: 1px solid #334155;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  margin-right: 6px;
+  vertical-align: middle;
+  letter-spacing: 0.5px;
+}
+
+.test-purpose-sub {
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 500;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  line-height: 1.4;
+}
+
+.cat-tag-pill {
+  font-family: var(--font-mono);
+  letter-spacing: 0.3px;
+}
+
+/* Matrix Filter Bar & Controls */
+.matrix-filter-header {
+  background: #FFFFFF;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.matrix-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.matrix-search-icon {
+  position: absolute;
+  left: 14px;
+  font-size: 16px;
+  color: #94A3B8;
+  pointer-events: none;
+}
+
+.matrix-search-input {
+  width: 100%;
+  padding: 12px 14px 12px 42px;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--border);
+  font-size: 14px;
+  background: #F8FAFC;
+  transition: all 0.2s ease;
+}
+
+.matrix-search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.matrix-pill-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.matrix-pill-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.matrix-pill-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 75px;
+}
+
+.matrix-pill {
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: #F1F5F9;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.matrix-pill:hover {
+  background: #E2E8F0;
+  color: var(--text);
+}
+
+.matrix-pill.active {
+  background: var(--primary);
+  color: #FFFFFF;
+  border-color: var(--primary);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+}
+
+/* Category Card 148 Matrix Card on Dashboard */
+.matrix-featured-card {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #1E1B4B 0%, #0F172A 100%);
+  color: #FFFFFF;
+  border: 1px solid #312E81;
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 10px 25px -5px rgba(30, 27, 75, 0.5);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.matrix-featured-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px -6px rgba(30, 27, 75, 0.6);
+}
+
+.matrix-featured-left h3 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.matrix-featured-left p {
+  color: #C7D2FE;
+  font-size: 14px;
+  max-width: 650px;
+  line-height: 1.5;
+}
+
+.matrix-stat-pills {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.matrix-badge-chip {
+  background: rgba(255, 255, 255, 0.12);
+  color: #E0E7FF;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Glowing Scanner Radar Animation on HUD */
+.live-process-hud {
+  position: relative;
+  overflow: hidden;
+}
+
+.live-process-hud::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.25), transparent);
+  animation: scanRadar 2s infinite linear;
+}
+
+@keyframes scanRadar {
+  0% { left: -50%; }
+  100% { left: 150%; }
+}
+

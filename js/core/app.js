@@ -337,17 +337,13 @@ window.VeriQ.ui = (function() {
   const ui = VeriQ.ui;
 
   // The 10 core VeriQ testing modules
+  // The 5 core VeriQ testing modules containing all 148 tests
   const DEFAULT_MODULE_IDS = [
-    '01-functional',
-    '02-performance',
-    '03-security',
-    '04-accessibility',
-    '05-compatibility',
-    '06-health-seo',
-    '07-reliability',
-    '08-localization',
-    '09-code-quality',
-    '10-specialized'
+    'cat-a-functional',
+    'cat-b-nonfunctional',
+    'cat-c-security',
+    'cat-d-webspecific',
+    'cat-e-specialized'
   ];
 
   const app = VeriQ.core.app = {
@@ -358,7 +354,7 @@ window.VeriQ.ui = (function() {
 
     /**
      * Navigates to a specific page
-     * @param {string} page - Page ID (e.g. 'dashboard', 'seo', 'settings')
+     * @param {string} page - Page ID (e.g. 'dashboard', 'matrix-148', 'cat-a-functional')
      */
     navigate(page) {
       if (!page) return;
@@ -414,9 +410,9 @@ window.VeriQ.ui = (function() {
       }
 
       // 2. Update active sidebar item
-      const navLinks = document.querySelectorAll('[data-nav], .sidebar-link');
+      const navLinks = document.querySelectorAll('[data-nav], .sidebar-link, .nav-item, #sidebar-nav a');
       navLinks.forEach(link => {
-        const target = (link.getAttribute('data-nav') || link.getAttribute('href') || '')
+        const target = (link.getAttribute('data-nav') || link.getAttribute('data-page') || link.getAttribute('href') || '')
           .replace(/^#\/?/, '')
           .trim();
 
@@ -427,7 +423,16 @@ window.VeriQ.ui = (function() {
         }
       });
 
-      // 3. Update view header title if present
+      // 3. Page specific activations
+      if (page === 'matrix-148') {
+        reporter.renderUnifiedMatrix(VeriQ.state.lastResults || {});
+      } else if (page === 'history') {
+        app.renderHistoryPage();
+      } else if (page === 'dashboard') {
+        reporter.updateDashboard(VeriQ.state.lastResults || {});
+      }
+
+      // 4. Update view header title if present
       const titleEl = document.getElementById('current-page-title');
       if (titleEl) {
         titleEl.textContent = page.charAt(0).toUpperCase() + page.slice(1);
@@ -841,8 +846,9 @@ window.VeriQ.ui = (function() {
         storage.saveRun(runData);
         VeriQ.state.lastRunTime = runData.timestamp;
 
-        // Step 8: Update history page and dashboard history
+        // Step 8: Update history page, dashboard history, and unified matrix
         app.renderHistoryPage();
+        reporter.renderUnifiedMatrix(allResults);
 
         // Optional push to Sheets if enabled
         const settings = storage.getSettings();
@@ -919,7 +925,7 @@ window.VeriQ.ui = (function() {
         runCategoryBtn.addEventListener('click', (e) => {
           e.preventDefault();
           const curPage = app.getCurrentPage();
-          if (curPage && (curPage.startsWith('0') || curPage.startsWith('10'))) {
+          if (curPage && (curPage.startsWith('cat-') || curPage.startsWith('0') || curPage.startsWith('10'))) {
             app.runModule(curPage);
           } else {
             app.runAll();
@@ -951,9 +957,9 @@ window.VeriQ.ui = (function() {
 
       // 3. Navigation Links Delegation
       document.addEventListener('click', (e) => {
-        const navLink = e.target.closest('[data-nav], .sidebar-link');
+        const navLink = e.target.closest('[data-nav], .sidebar-link, .nav-item, #sidebar-nav a');
         if (navLink) {
-          const target = navLink.getAttribute('data-nav') || navLink.getAttribute('href');
+          const target = navLink.getAttribute('data-nav') || navLink.getAttribute('data-page') || navLink.getAttribute('href');
           if (target && !target.startsWith('http')) {
             e.preventDefault();
             app.navigate(target);
@@ -980,6 +986,44 @@ window.VeriQ.ui = (function() {
           ui.toast('Exported history to CSV', 'info');
         });
       }
+
+      // 3c. Unified 148 Matrix Live Search & Filter Chips
+      const matrixSearch = document.getElementById('matrix-search');
+      const getMatrixFilters = () => {
+        const catPill = document.querySelector('.matrix-cat-pill.active');
+        const activeCat = catPill ? catPill.getAttribute('data-cat') : 'all';
+        const statusPill = document.querySelector('.matrix-status-pill.active');
+        const activeStatus = statusPill ? statusPill.getAttribute('data-status') : 'all';
+        const q = matrixSearch ? matrixSearch.value : '';
+        return { activeCat, activeStatus, q };
+      };
+
+      if (matrixSearch) {
+        matrixSearch.addEventListener('input', () => {
+          const { activeCat, activeStatus, q } = getMatrixFilters();
+          reporter.renderUnifiedMatrix(VeriQ.state.lastResults || {}, activeCat, activeStatus, q);
+        });
+      }
+
+      document.addEventListener('click', (e) => {
+        const catPill = e.target.closest('.matrix-cat-pill');
+        if (catPill) {
+          e.preventDefault();
+          document.querySelectorAll('.matrix-cat-pill').forEach(p => p.classList.remove('active'));
+          catPill.classList.add('active');
+          const { activeCat, activeStatus, q } = getMatrixFilters();
+          reporter.renderUnifiedMatrix(VeriQ.state.lastResults || {}, activeCat, activeStatus, q);
+        }
+
+        const statusPill = e.target.closest('.matrix-status-pill');
+        if (statusPill) {
+          e.preventDefault();
+          document.querySelectorAll('.matrix-status-pill').forEach(p => p.classList.remove('active'));
+          statusPill.classList.add('active');
+          const { activeCat, activeStatus, q } = getMatrixFilters();
+          reporter.renderUnifiedMatrix(VeriQ.state.lastResults || {}, activeCat, activeStatus, q);
+        }
+      });
 
       // 4. Test Filter Buttons Delegation
       document.addEventListener('click', (e) => {

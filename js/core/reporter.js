@@ -251,7 +251,9 @@ VeriQ.core.reporter = (function() {
     const testId = test.id || utils.generateId();
     const emoji = utils.statusToEmoji(status);
     const statusLabel = utils.statusToLabel(status);
+    const testNum = test.num ? `<span class="test-num-badge">#${test.num}</span>` : '';
     const testName = utils.escapeHtml(test.name || test.title || 'Untitled Test');
+    const purposeHtml = test.purpose ? `<div class="test-purpose-sub">🎯 ${utils.escapeHtml(test.purpose)}</div>` : '';
     const summary = utils.escapeHtml(test.summary || test.message || 'No summary provided');
     const scoreVal = (typeof test.score === 'number' && !isNaN(test.score)) ? Math.round(test.score) : null;
     const duration = (typeof test.duration === 'number' && test.duration > 0)
@@ -262,6 +264,7 @@ VeriQ.core.reporter = (function() {
     card.className = 'test-card';
     card.setAttribute('data-status', status);
     card.setAttribute('data-test-id', testId);
+    if (test.num) card.setAttribute('data-test-num', test.num);
 
     // Score badge markup (only if test has score)
     const scoreBadgeHtml = scoreVal !== null
@@ -330,7 +333,8 @@ VeriQ.core.reporter = (function() {
       <div class="test-card-header" role="button" tabindex="0" aria-expanded="false">
         <span class="test-status-emoji">${emoji}</span>
         <div class="test-info">
-          <div class="test-name">${testName}</div>
+          <div class="test-name">${testNum} ${testName}</div>
+          ${purposeHtml}
           <div class="test-summary-preview">${summary}</div>
         </div>
         <div class="test-card-right">
@@ -592,6 +596,155 @@ VeriQ.core.reporter = (function() {
     }
 
     historyList.innerHTML = cardsHtml;
+
+    // Attach click handlers to dashboard history action buttons
+    historyList.querySelectorAll('.btn-inspect-run').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const runId = btn.getAttribute('data-run-id');
+        const run = storage ? storage.getRunById(runId) : null;
+        if (run && VeriQ.core.app) {
+          VeriQ.core.app.setUrl(run.url);
+          VeriQ.state.lastResults = run.results || {};
+          VeriQ.core.reporter.updateDashboard(run.results || {});
+          VeriQ.core.reporter.renderUnifiedMatrix(run.results || {});
+          Object.entries(run.results || {}).forEach(([mId, rList]) => {
+            VeriQ.core.reporter.renderModuleResults(mId, rList);
+          });
+          VeriQ.ui.toast(`Loaded test run for ${run.url}`, 'info');
+        }
+      });
+    });
+
+    historyList.querySelectorAll('.btn-rerun-target').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const url = btn.getAttribute('data-run-url');
+        if (url && VeriQ.core.app) {
+          VeriQ.core.app.setUrl(url);
+          VeriQ.core.app.runAll(url);
+        }
+      });
+    });
+  }
+
+  /**
+   * Renders the Unified 148 Tests Matrix view with live filtering and search
+   * @param {Object} allResults - Map of moduleId -> results[]
+   * @param {string} [activeCat='all'] - 'all' or category ID / code
+   * @param {string} [activeStatus='all'] - 'all', 'pass', 'warn', 'fail', 'info'
+   * @param {string} [searchQuery=''] - keyword or test number
+   */
+  function renderUnifiedMatrix(allResults = {}, activeCat = 'all', activeStatus = 'all', searchQuery = '') {
+    const container = document.getElementById('matrix-148-container');
+    if (!container) return;
+
+    let allTests = [];
+    const categoryMeta = {
+      'cat-a-functional': { code: 'A', name: 'Functional Testing', color: '#3B82F6' },
+      'cat-b-nonfunctional': { code: 'B', name: 'Non-Functional Testing', color: '#F59E0B' },
+      'cat-c-security': { code: 'C', name: 'Security Testing', color: '#DC2626' },
+      'cat-d-webspecific': { code: 'D', name: 'Web-Specific Testing', color: '#0EA5E9' },
+      'cat-e-specialized': { code: 'E', name: 'Specialized & Advanced', color: '#8B5CF6' }
+    };
+
+    // Gather executed test results
+    for (const [modId, results] of Object.entries(allResults)) {
+      if (Array.isArray(results)) {
+        results.forEach(t => {
+          allTests.push({
+            ...t,
+            modId,
+            categoryCode: categoryMeta[modId]?.code || '?',
+            categoryName: categoryMeta[modId]?.name || modId,
+            categoryColor: categoryMeta[modId]?.color || '#2563EB'
+          });
+        });
+      }
+    }
+
+    // If no tests run yet or empty, populate with definitions from VeriQ.modules
+    if (allTests.length === 0) {
+      for (const [modId, mod] of Object.entries(VeriQ.modules || {})) {
+        if (mod && Array.isArray(mod.tests)) {
+          mod.tests.forEach(t => {
+            allTests.push({
+              id: t.id,
+              num: t.num,
+              name: t.name,
+              purpose: t.purpose,
+              status: 'info',
+              score: null,
+              summary: t.purpose || 'Ready to evaluate',
+              modId,
+              categoryCode: mod.code || categoryMeta[modId]?.code || '?',
+              categoryName: mod.name || categoryMeta[modId]?.name || modId,
+              categoryColor: mod.color || categoryMeta[modId]?.color || '#2563EB'
+            });
+          });
+        }
+      }
+    }
+
+    // Sort tests by number (#1 to #148)
+    allTests.sort((a, b) => (a.num || 0) - (b.num || 0));
+
+    // Update summary counts
+    const totalCountEl = document.getElementById('matrix-stat-total');
+    if (totalCountEl) totalCountEl.textContent = allTests.length.toString();
+
+    // Filter by Category
+    let filtered = allTests;
+    if (activeCat && activeCat !== 'all') {
+      filtered = filtered.filter(t => t.modId === activeCat || t.categoryCode === activeCat);
+    }
+
+    // Filter by Status
+    if (activeStatus && activeStatus !== 'all') {
+      filtered = filtered.filter(t => String(t.status || '').toLowerCase() === activeStatus.toLowerCase());
+    }
+
+    // Filter by Search Query
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(t => {
+        const numStr = String(t.num || '');
+        const nameStr = (t.name || '').toLowerCase();
+        const purpStr = (t.purpose || '').toLowerCase();
+        const sumStr = (t.summary || '').toLowerCase();
+        return numStr === q || numStr.includes(q) || nameStr.includes(q) || purpStr.includes(q) || sumStr.includes(q);
+      });
+    }
+
+    // Render cards
+    container.innerHTML = '';
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state" style="padding: 48px 24px; text-align: center; grid-column: 1 / -1;">
+          <div style="font-size: 36px; margin-bottom: 12px;">🔍</div>
+          <h3 style="font-size: 18px; margin-bottom: 6px;">No matching tests found</h3>
+          <p style="color: #64748B;">Try clearing the search query or selecting a different category/status pill.</p>
+        </div>
+      `;
+      return;
+    }
+
+    const frag = document.createDocumentFragment();
+    for (const test of filtered) {
+      const card = createTestCard(test);
+      
+      // Inject category badge pill in the card header
+      const infoContainer = card.querySelector('.test-info');
+      if (infoContainer) {
+        const catBadge = document.createElement('span');
+        catBadge.className = 'cat-tag-pill';
+        catBadge.textContent = `Cat ${test.categoryCode}: ${test.categoryName}`;
+        catBadge.style.cssText = `background: ${test.categoryColor}18; color: ${test.categoryColor}; border: 1px solid ${test.categoryColor}40; font-size: 11px; padding: 2px 8px; border-radius: 9999px; font-weight: 600; display: inline-block; margin-bottom: 4px;`;
+        infoContainer.insertBefore(catBadge, infoContainer.firstChild);
+      }
+      frag.appendChild(card);
+    }
+    container.appendChild(frag);
   }
 
   // -------------------------------------------------------------------------
@@ -952,6 +1105,7 @@ VeriQ.core.reporter = (function() {
   return {
     createTestCard,
     renderModuleResults,
+    renderUnifiedMatrix,
     updateDashboard,
     updateStatus,
     updateProgress,

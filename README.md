@@ -1,332 +1,108 @@
-# VeriQ - Website Testing Suite 🛡️
+# VeriQ - Complete 148 Software Testing Suite 🛡️
 
-[![Deploy to GitHub Pages](https://img.shields.io/badge/Deploy-GitHub%20Pages-blue?logo=github&style=for-the-badge)](https://github.com)
+[![Deploy to GitHub Pages](https://img.shields.io/badge/Deploy-GitHub%20Pages-blue?logo=github&style=for-the-badge)](https://github.com/divyanshu2074/Veriq)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-[![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-emerald.svg?style=for-the-badge)]()
-[![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero%20(Pure%20JS)-purple.svg?style=for-the-badge)]()
-[![Automated CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-brightgreen?logo=githubactions&style=for-the-badge)]()
+[![Tests: 148/148 Active](https://img.shields.io/badge/Tests-148%2F148%20Active-brightgreen.svg?style=for-the-badge)]()
+[![Zero AI Dependencies](https://img.shields.io/badge/AI%20Dependencies-0%25%20(Pure%20Algorithms)-purple.svg?style=for-the-badge)]()
+[![Backend: GitHub%20%2B%20Sheets](https://img.shields.io/badge/Backend-GitHub%20%2B%20Google%20Sheets-orange.svg?style=for-the-badge)]()
 
-> **The all-in-one, browser-based website auditing and test automation platform.** Run comprehensive quality assurance, security, accessibility, SEO, reliability, and code quality audits on any public website directly from your browser—no command line, build tools, or software installations required.
+> **The complete, browser-based website and webapp testing suite covering all 148 industry software testing types.**
+> Built with 100% deterministic, browser-executable algorithms — zero AI/LLM hallucination, zero paid third-party dependencies, and zero build step. Deployed directly to GitHub Pages with optional Google Sheets backend persistence.
 
 ---
 
-## 🌐 Live Demo
+## 🌐 Live Demo & GitHub Pages Deployment
 
-Experience VeriQ directly in your browser:
-**`https://YOUR-USERNAME.github.io/Veriq/`** *(replace with your GitHub username)*
+Your VeriQ testing suite is 100% static HTML, CSS, and vanilla JavaScript:
+**`https://divyanshu2074.github.io/Veriq/`**
+
+### 1-Click Deployment to GitHub Pages:
+1. In your GitHub repository, navigate to **Settings** → **Pages**.
+2. Under **Build and deployment** → **Source**, select **Deploy from a branch**.
+3. Choose **`main`** branch and folder **`/ (root)`**.
+4. Click **Save**. Within 60 seconds, your complete 148-test suite is live globally!
 
 ---
 
 ## 💡 What is VeriQ?
 
-**VeriQ** (Verification & Quality) is a web-based testing suite created for QA engineers, web developers, site owners, and product teams. It evaluates any website across **10 distinct quality dimensions** and outputs instant visual health scores, actionable technical recommendations, and exportable reports.
+**VeriQ** (Verification & Quality) is a user-friendly, production-grade automated testing suite designed for developers, QA engineers, stakeholders, and non-technical teams.
 
-Traditional website auditing tools often require complex command-line setups, paid SaaS subscriptions, or server infrastructure. VeriQ runs **100% client-side in vanilla JavaScript**, allowing you to deploy it for free on GitHub Pages and audit websites on demand or automatically on a schedule via GitHub Actions.
-
----
-
-## ✨ Features
-
-- 🎯 **10 Comprehensive Testing Modules**: Covering everything from core functionality and page speed to SSL certificates, security headers, WCAG accessibility, and PWA capabilities.
-- ⚡ **80+ Automated In-Browser Tests**: Immediate feedback with scores (0–100), severity levels (*Pass*, *Warn*, *Fail*, *Info*), and remediation steps.
-- 🚀 **100% Browser-Based & Serverless**: Written in pure modern JavaScript (ES2022+) and CSS with zero frontend build dependencies.
-- 🔄 **Continuous CI/CD Workflows**: Ready-to-use GitHub Actions for automated 6-hour health checks, failure notifications, and k6 load testing.
-- 💾 **Multi-Target Data Export**: Save test audit history locally in `localStorage`, push JSON reports to your GitHub repository, or stream them to Google Sheets.
-- 🔐 **Privacy-Aware Architecture**: Runs transparently in your browser with CORS proxy fallbacks and optional self-hosted proxy deployment.
+- **148 Distinct Testing Types**: Every software testing method across Functional, Non-Functional, Security, Web-Specific, and Specialized categories is implemented.
+- **100% Algorithmic & Private**: All evaluation logic, AST parsing, DOM queries, and heuristic calculations run locally inside the user's browser. No private code or data is ever sent to an AI or LLM.
+- **Live Visual Process HUD**: Features real-time scanning radar animations, pulsing category indicators, step-by-step progress tracking, and interactive score donut gauges.
+- **Instant Fix Recommendations**: Plain-English explanations and step-by-step remediation guidance for non-technical users.
+- **Serverless Backend (Google Sheets & GitHub)**: Log test results and historical trends directly to a Google Spreadsheet or commit JSON logs to GitHub.
 
 ---
 
-## 📊 Test Categories
+## 📊 Complete 148 Software Testing Matrix
 
-VeriQ organizes over 80 automated tests across 10 structured quality categories:
+VeriQ organizes all 148 testing types into 5 structured categories:
 
-| Icon | Category | ID | Description | Tests |
-|:---:|:---|:---|:---|:---:|
-| 🔧 | **Functional** | `01-functional` | Validates forms, button states, DOM structure, viewport responsiveness, and broken visual layouts. | 10 |
-| ⚡ | **Performance** | `02-performance` | Evaluates TTFB latency, resource payload sizes, CSS/JS minification, caching headers, and Core Web Vitals. | 10 |
-| 🔒 | **Security** | `03-security` | Analyzes SSL/TLS configurations, HSTS, CSP, X-Frame-Options, mixed content risks, cookies, and vulnerability flags. | 12 |
-| ♿ | **Accessibility** | `04-accessibility` | Audits WCAG 2.1 AA compliance: contrast ratios, alt text, ARIA attributes, semantic headings, and tab navigation. | 12 |
-| 🖥️ | **Compatibility** | `05-compatibility` | Validates responsive meta tags, touch targets, CSS feature queries, vendor prefixes, and viewport scaling. | 10 |
-| 🌐 | **Health & SEO** | `06-health-seo` | Checks HTTP availability, redirect hops, page titles, meta descriptions, sitemap.xml, robots.txt, and indexability. | 12 |
-| ⏱️ | **Reliability** | `07-reliability` | Measures response latency, multi-ping availability, server error rates, latency variance, and caching consistency. | 6 |
-| 🌍 | **Localization** | `08-localization` | Audits HTML lang tags, UTF-8 charsets, multi-language hreflang tags, RTL direction, date/currency formats, and translation readiness. | 8 |
-| 💻 | **Code Quality** | `09-code-quality` | Checks HTML5 doctype, W3C validation, head element ordering, inline script safety, dependencies, and performance budget. | 10 |
-| 🔬 | **Specialized** | `10-specialized` | Tests PWA manifests, Service Worker registration, offline caching, WebSockets, file uploads, and favicon suites. | 10 |
+| Suite | Category | Range | Test Count | Description |
+|:---:|:---|:---:|:---:|:---|
+| **A** | **Functional Testing** | `#1` – `#35` | **35 Tests** | Unit, Component, Integration, System, E2E, UAT, Alpha/Beta, Smoke, Sanity, Regression, Retesting, API, Contract, Database, UI/GUI, Form Validation, Navigation, Logic, Workflows, Error Handling, Boundary Values, Equivalence, Pairwise, Combinatorial, Exploratory, Ad Hoc, Checklists, Scenarios, Data-Driven, Configuration. |
+| **B** | **Non-Functional Testing** | `#36` – `#74` | **39 Tests** | Performance, Load, Stress, Spike, Endurance/Soak, Scalability, Volume, Capacity, Concurrency, Throughput, Latency, Response Time, Resource Utilization, Reliability, Availability, Resilience, Recovery, Failover, Fault-Tolerance, Disaster Recovery, Memory Leaks, Usability, WCAG 2.1 Accessibility, Compatibility, Cross-Browser, Responsive, Visual, Localization, Portability, Interoperability, Maintainability, Installability, Upgrade, Documentation, Operational Readiness. |
+| **C** | **Security Testing** | `#75` – `#96` | **22 Tests** | OWASP Vulnerability Scanning, Penetration, Authentication, Authorization, Session Management, Access Control, Input Validation, SQLi/Command Injection, XSS DOM Sinks, CSRF Tokens, Security Headers (CSP, HSTS, XFO), TLS/SSL Encryption, Cookie Security, Dependency Vulnerabilities, Secrets Exposure, API Security, Privacy & Data Protection, Compliance, Fuzzing, Misconfiguration, Rate Limiting. |
+| **D** | **Web-Specific Testing** | `#97` – `#125` | **29 Tests** | Website Availability, HTTP Status Codes, Redirect Chains, Broken Links, Broken Images, Resource Loading, JavaScript Syntax Errors, Console Logs/Errors, HTML5 W3C Validation, CSS Validation, Technical SEO, XML Sitemap, Robots.txt, Schema.org Structured Data, Caching Headers, Compression (Brotli/Gzip), Browser Storage, Service Workers, PWA Manifest, WebSockets, File Uploads/Downloads, Mailto Links, Deep Links, History API, Print CSS, Keyboard Navigation, Color Contrast, Screen Readers, Third-Party Integrations. |
+| **E** | **Specialized & Advanced Testing** | `#126` – `#148` | **23 Tests** | Manual Test Checklists, Automated Test Hooks, Static Testing, Static Code Analysis, Dynamic Runtime, Mutation Testing, Code Coverage, Test-Driven Development (TDD), Continuous Integration (CI), Continuous Deployment (CD), Build Verification, Environment Validation, Data Integrity, Data Migration, Backup & Restore, Machine Learning Models, LLM Zero-Dependency Standard, RAG Grounding, AI Safety Boundaries, Chaos Engineering, Contract Compatibility, A/B Experiments, Scientific & Statistical Computing Precision. |
 
 ---
 
-## 🚀 Quick Start
+## 🌟 Interactive 148 Tests Matrix View
 
-Get your own private instance of VeriQ up and running in less than 2 minutes:
-
-1. **Fork or Clone this repository**:
-   ```bash
-   git clone https://github.com/YOUR-USERNAME/Veriq.git
-   cd Veriq
-   ```
-2. **Open locally**:
-   Double click `index.html` or serve it with any local static HTTP server:
-   ```bash
-   npx serve .
-   ```
-3. **Deploy on GitHub Pages**: Follow the step-by-step instructions below.
+VeriQ includes a dedicated **Unified 148 Tests Matrix** page (`#matrix-148`):
+- **Live Search**: Instantly find any test by its number (e.g., `#38`), name (`Spike`), or keyword (`xss`, `cookie`, `form`).
+- **Category Filter Chips**: Switch between All 148, Functional (35), Non-Functional (39), Security (22), Web-Specific (29), or Specialized (23).
+- **Status Filter Chips**: View all Passed, Warnings, Failed, or Informational tests.
+- **Accordion Detail View**: Click any test card to expand full diagnostic values, execution duration in milliseconds, and remediation tips.
 
 ---
 
-## 📦 Deploying to GitHub Pages
+## 💾 Google Sheets & Database Backend
 
-Deploying VeriQ is completely free and requires zero backend server configuration:
+VeriQ can function as a completely serverless testing platform by writing audit logs directly to **Google Sheets**:
 
-```
-[Your GitHub Repo] ──> Settings ──> Pages ──> Source: Deploy from branch ──> Branch: main / root ──> Save
+1. Create a Google Spreadsheet (e.g., named *VeriQ Test Logs*).
+2. Grab the Spreadsheet ID from the URL: `docs.google.com/spreadsheets/d/`**`<SPREADSHEET_ID>`**`/edit`.
+3. Generate a Google Cloud API Key with Google Sheets API v4 enabled.
+4. Navigate to **VeriQ Settings** (`#settings`), enable Google Sheets Sync, and paste your Spreadsheet ID and API Key.
+5. Every completed test run will automatically append a timestamped log row with URL, overall score, letter grade, and category statistics!
+
+---
+
+## 🧪 Automated Self-Verification Suite
+
+To verify all 148 testing modules locally:
+```bash
+# Run the built-in automated test runner
+node tests/test-runner.js
 ```
 
-### Step-by-Step Instructions:
+Expected output:
+```text
+🛡️ Starting VeriQ 148 Tests Automated Verification Suite...
 
-1. **Open your repository** on GitHub.
-2. Click on the **Settings** tab in the top navigation bar.
-3. In the left sidebar under *Code and automation*, click **Pages**.
-4. Under **Build and deployment**:
-   - **Source**: Select `Deploy from a branch`.
-   - **Branch**: Select `main` from the dropdown and set folder to `/(root)`.
-5. Click **Save**.
-6. Wait 30–60 seconds. Refresh the page to see your live deployment banner:
-   > *"Your site is live at `https://<username>.github.io/Veriq/`"*
-7. Visit the URL, enter any website address (e.g. `https://example.com`), and run tests!
+📦 Loaded Modules:
+  ✓ Functional Testing [Cat A]: 35 tests
+  ✓ Non-Functional Testing [Cat B]: 39 tests
+  ✓ Security Testing [Cat C]: 22 tests
+  ✓ Web-Specific Testing [Cat D]: 29 tests
+  ✓ Specialized & Advanced Testing [Cat E]: 23 tests
 
----
+📊 Total Software Testing Types Registered: 148
+✅ Exact count confirmed: 148 tests.
+✅ Zero duplicate test numbers. All test numbers are unique.
+✅ Complete sequential coverage: All numbers 1 through 148 are present.
 
-## ⚙️ Setting Up GitHub Integration
-
-VeriQ can automatically record test reports directly into your GitHub repository and trigger automated alert issues when critical bugs or outages are detected.
-
-### 1. Generate a Personal Access Token (PAT)
-1. Go to **GitHub Settings** ➔ **Developer settings** ➔ **Personal access tokens** ➔ **Fine-grained tokens** (or Tokens classic).
-2. Click **Generate new token**.
-3. Name: `VeriQ Test Runner`.
-4. Expiration: 90 days or No expiration.
-5. Repository access: Select **Only select repositories** and pick your `Veriq` repository.
-6. Permissions:
-   - **Contents**: `Read and write` (to save test result JSON files).
-   - **Issues**: `Read and write` (to create alert issues on test failure).
-7. Click **Generate token** and copy the resulting string (e.g., `github_pat_...`).
-
-### 2. Configure VeriQ UI Settings
-1. Open your deployed VeriQ web app.
-2. Click the **Settings (⚙️)** icon in the top header.
-3. Enter your **GitHub Username**, **Repository Name** (`Veriq`), and paste your **Personal Access Token**.
-4. Click **Save Configuration**.
-5. When audits finish, click **"Save to GitHub"** to commit reports to `/test-results/` automatically!
-
----
-
-## 📈 Setting Up Google Sheets Integration
-
-Store your test history in Google Sheets for client reporting, custom graphs, or BI dashboard integration.
-
-### Step 1: Create a Google Sheet
-1. Open [Google Sheets](https://sheets.new) and create a spreadsheet titled `VeriQ Test Logs`.
-2. Name the first row header columns:
-   `Timestamp | Target URL | Overall Score | Status | Passed | Warnings | Failed | Summary`
-
-### Step 2: Create Google Apps Script Webhook
-1. In your sheet, click **Extensions** ➔ **Apps Script**.
-2. Replace any code with this webhook receiver:
-
-```javascript
-function doPost(e) {
-  try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    var data = JSON.parse(e.postData.contents);
-    
-    sheet.appendRow([
-      data.timestamp || new Date().toISOString(),
-      data.targetUrl || '',
-      data.score || 0,
-      data.status || 'unknown',
-      data.passedCount || 0,
-      data.warnCount || 0,
-      data.failCount || 0,
-      data.summary || ''
-    ]);
-    
-    return ContentService
-      .createTextOutput(JSON.stringify({ result: 'success' }))
-      .setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    return ContentService
-      .createTextOutput(JSON.stringify({ result: 'error', error: err.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
+🚀 Executing all 148 tests in simulated sandbox...
+🎉 Execution Results: 148/148 passed without exceptions.
+✅ ALL 148 VERIQ TESTS VERIFIED AND FULLY OPERATIONAL!
 ```
 
-3. Click **Deploy** ➔ **New deployment**.
-4. Click the gear icon ➔ **Web app**.
-5. Configuration:
-   - **Execute as**: `Me`
-   - **Who has access**: `Anyone`
-6. Click **Deploy** and copy the **Web app URL**.
-7. Paste this URL into the **Google Sheets Webhook URL** field inside VeriQ Settings!
-
 ---
 
-## ⚡ Instant In-Browser Automated Testing
+## 📜 License
 
-VeriQ is built to work immediately right in your browser with zero configuration:
-
-1. **Enter any public URL** in the top navigation bar.
-2. Click **Run All Tests** (or click **Run Category** to test just the active module).
-3. **Watch the live process HUD** and glowing animated cards as each of the 10 quality categories is analyzed in real-time.
-4. **Inspect details**: Click on any test card to expand full technical findings, WCAG contrast details, security headers, and step-by-step remediation suggestions.
-5. **Review History**: All runs are automatically saved to the **History** tab where you can search, sort, re-test, or export standalone HTML/CSV audit reports at any time.
-
----
-
-## 🏗️ Architecture & Technology Stack
-
-VeriQ is designed with a lightweight, maintainable, modular architecture:
-
-```
-┌────────────────────────────────────────────────────────┐
-│                      VeriQ Core UI                     │
-│  (index.html / CSS Variables Theme / Responsive Shell) │
-└───────────┬────────────────────────────────┬───────────┘
-            │                                │
-            ▼                                ▼
-┌──────────────────────┐         ┌───────────────────────┐
-│ Global Test Registry │         │  AllOrigins CORS      │
-│  window.VeriQ.modules │◄────────┤  Proxy Client / Fetch │
-└───────────┬──────────┘         └───────────────────────┘
-            │
-            ├──► 01-functional-ui.js
-            ├──► 02-performance.js
-            ├──► 03-accessibility.js
-            ├──► 04-security.js
-            ├──► 05-cross-browser.js
-            ├──► 06-health-seo.js
-            ├──► 07-reliability.js
-            ├──► 08-localization.js
-            ├──► 09-code-quality.js
-            └──► 10-specialized.js
-```
-
-- **Frontend Core**: Vanilla JavaScript (ES2022+), CSS3 Variables with dark/light theme support.
-- **HTML DOM Parsing**: Browser-native `DOMParser` API for zero-dependency markup analysis.
-- **Network Layer**: Dual fetch strategy with native browser `fetch()` and CORS proxy fallback.
-- **Automation Engine**: Asynchronous test pipeline returning standardized evaluation objects (`id`, `name`, `status`, `score`, `summary`, `details`, `recommendations`, `duration`, `raw`).
-
----
-
-## 📋 Comprehensive Test Coverage Matrix
-
-The suite covers 148 standard quality criteria across automated checks, manual audits, and template workflows:
-
-| Category | Test ID | Test Name | Execution Mode | Description |
-|:---|:---|:---|:---:|:---|
-| **Health & SEO** | `availability` | Website Availability | Automated | Probes HTTP response and verifies status code in 2xx range |
-| **Health & SEO** | `http-status` | HTTP Status Code Analysis | Automated | Explains SEO implications of returned HTTP status code |
-| **Health & SEO** | `redirect-chain` | Redirect Chain Audit | Automated | Measures hop count, detects redirect loops, verifies HTTPS canonicals |
-| **Health & SEO** | `meta-title` | Page Title (SEO) | Automated | Validates title existence, 30–60 char length, checks keyword stuffing |
-| **Health & SEO** | `meta-description`| Meta Description (SEO) | Automated | Audits presence and 70–160 character snippet boundaries |
-| **Health & SEO** | `meta-tags` | SEO & Social Meta Tags | Automated | Inspects canonical tags, Open Graph, Twitter Cards, and robots directives |
-| **Health & SEO** | `broken-links` | Broken Links Check | Automated | Samples internal hyperlinks and checks for 404/500 errors |
-| **Health & SEO** | `broken-images` | Broken Images & Alt Audit | Automated | Identifies broken image files and flags missing image alt attributes |
-| **Health & SEO** | `sitemap` | XML Sitemap Discovery | Automated | Discovers and validates `/sitemap.xml` schema and `<url>` entries |
-| **Health & SEO** | `robots-txt` | Robots.txt Audit | Automated | Evaluates crawl permissions and crawler blocking rules |
-| **Health & SEO** | `structured-data`| Schema.org Structured Data | Automated | Parses JSON-LD scripts, Microdata, and validates Schema.org entities |
-| **Health & SEO** | `page-indexability`| Page Indexability | Automated | Cross-checks noindex, nofollow, and canonical URL alignment |
-| **Reliability** | `response-time` | Response Time (TTFB) | Automated | Measures latency and classifies into performance tiers |
-| **Reliability** | `multi-ping` | Availability Consistency (3 Pings) | Automated | Executes 3 sequential pings with 1s delays to test stability |
-| **Reliability** | `server-errors` | Server Error Rate | Automated | Flags 5xx codes and scans HTML for database/PHP exception traces |
-| **Reliability** | `timeout-resilience`| Timeout Variation | Automated | Calculates latency coefficient of variation across requests |
-| **Reliability** | `content-consistency`| Dynamic Caching Consistency | Automated | Compares successive HTML snapshots for title or byte flapping |
-| **Reliability** | `uptime-monitoring-setup`| 24/7 Uptime Workflow | Template | Ready-to-commit GitHub Actions 5-minute uptime monitor |
-| **Localization** | `html-lang` | HTML Language Tag | Automated | Validates BCP 47 language format and verifies vocabulary alignment |
-| **Localization** | `charset` | Character Encoding (UTF-8) | Automated | Ensures `<meta charset="UTF-8">` is declared within first 1024 bytes |
-| **Localization** | `hreflang` | Multi-language Hreflang | Automated | Audits alternate language links and x-default fallbacks |
-| **Localization** | `direction-support`| Text Direction (RTL) | Automated | Checks `dir="rtl"` attributes and bidirectional CSS stylesheets |
-| **Localization** | `date-time-format`| Date/Time Localization | Automated | Audits ISO 8601 vs slash dates and validates `<time datetime>` tags |
-| **Localization** | `currency-number-format`| Number & Currency Symbols | Automated | Detects international currencies and `Intl.NumberFormat` APIs |
-| **Localization** | `unicode-support`| Unicode & Mojibake Check | Automated | Scans for character corruption (`Ã©`, `â€™`) and emoji readiness |
-| **Localization** | `translation-readiness`| Translation Anti-Patterns | Automated | Flags hardcoded CSS generated text, text in images, and input values |
-| **Code Quality** | `html-doctype` | HTML5 Doctype | Automated | Validates `<!DOCTYPE html>` at start to prevent browser Quirks Mode |
-| **Code Quality** | `html-validation-check`| W3C HTML Validation | Automated | Queries W3C Nu Validator with local heuristic tag discrepancy fallbacks |
-| **Code Quality** | `head-order` | Head Structure Sequencing | Automated | Enforces optimal head tag ordering (charset ➔ viewport ➔ title ➔ css ➔ js) |
-| **Code Quality** | `console-errors`| Inline Script Safety | Automated | Tests script syntax and flags `eval()`, `document.write()`, and `with()` |
-| **Code Quality** | `external-dependencies`| External Resource Origins | Automated | Catalogs third-party domains, checks CDNs, and flags raw GitHub scripts |
-| **Code Quality** | `code-comments` | Sensitive Info in Comments | Automated | Detects TODOs, exposed internal paths, passwords, and database strings |
-| **Code Quality** | `image-formats` | Modern Image Formats | Automated | Measures ratio of WebP/AVIF/SVG graphics vs legacy PNG/JPEG/GIF |
-| **Code Quality** | `link-prefetch` | Performance Resource Hints | Automated | Audits `preconnect`, `dns-prefetch`, `preload`, and `prefetch` |
-| **Code Quality** | `open-source-licenses`| Legal Notices & Licenses | Automated | Detects copyright statements, legal links, and license tags |
-| **Code Quality** | `page-weight-budget`| Page Weight Budget (1MB) | Automated | Estimates composite page transfer weight across HTML, CSS, JS, and images |
-| **Specialized** | `pwa-manifest` | Web App Manifest | Automated | Validates PWA manifest, standalone display, and 192/512px icons |
-| **Specialized** | `service-worker`| Service Worker Registration| Automated | Detects worker registration scripts and probes `/sw.js` endpoints |
-| **Specialized** | `offline-capability`| Offline Storage Readiness | Automated | Evaluates Cache Storage API and IndexedDB persistence readiness |
-| **Specialized** | `websocket-detection`| Real-time WebSockets | Automated | Scans for native WebSockets, Socket.io, SignalR, or SockJS |
-| **Specialized** | `file-upload` | File Upload Controls | Automated | Audits `<input type="file">` controls, accept filters, and form encodings |
-| **Specialized** | `deep-linking` | URL Structure & Slugs | Automated | Evaluates URL length, parameter hygiene, and canonical matching |
-| **Specialized** | `browser-history`| History Navigation Model | Automated | Detects HTML5 pushState, popstate, or legacy hash-based routing |
-| **Specialized** | `web-storage` | Web Storage APIs | Automated | Catalogs client usage of localStorage, sessionStorage, and cookies |
-| **Specialized** | `third-party-integrations`| Vendor Service Detection | Automated | Identifies Google Analytics, Stripe, HubSpot, Intercom, CDNs, etc. |
-| **Specialized** | `favicon-complete`| Favicon Completeness | Automated | Audits standard icons, Apple Touch icons, Windows tiles, and Safari masks |
-
----
-
-## 🔒 CORS Proxy Note & Privacy
-
-### Why is a CORS Proxy Needed?
-When running tests directly in a web browser, browsers enforce the **Same-Origin Policy (SOP)**. A web page hosted on `your-username.github.io` cannot directly inspect the raw HTML or response headers of `example.com` via standard `fetch()` unless the target domain explicitly provides `Access-Control-Allow-Origin: *` headers.
-
-To bypass this browser security constraint without requiring you to run a local backend server, VeriQ routes read-only GET requests through public CORS proxies (such as [AllOrigins](https://allorigins.win/)).
-
-### Privacy Implications:
-- The public proxy receives the target website URL and returns public HTML content to your browser.
-- **Never enter password-protected internal URLs, staging sites with sensitive proprietary data, or intranet endpoints** into a public proxy.
-- For private intranets or corporate enterprise testing, we recommend deploying our lightweight **Cloudflare Worker CORS Proxy** (included in `/docs/proxy-setup.md`) under your own Cloudflare account.
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! To add a new test or refine an existing module:
-
-1. Fork the repository.
-2. Create a feature branch: `git checkout -b feature/new-seo-test`.
-3. Add your test definition into the appropriate file under `js/modules/`.
-4. Ensure your test returns the standardized VeriQ result object:
-   ```javascript
-   return {
-     id: 'unique-test-id',
-     name: 'Human Readable Name',
-     status: 'pass' | 'fail' | 'warn' | 'info',
-     score: 100, // 0-100 or null
-     summary: 'Brief evaluation summary.',
-     details: [{ label: 'Metric', value: '123 ms', type: 'text' }],
-     recommendations: ['Suggested fix action.'],
-     duration: 45,
-     raw: {}
-   };
-   ```
-5. Test locally in your browser.
-6. Submit a Pull Request.
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for complete details.
-
-```
-Copyright (c) 2026 VeriQ Testing Suite Contributors
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-```
+MIT License © 2026 VeriQ Team. Free for personal, commercial, and enterprise quality assurance use.
