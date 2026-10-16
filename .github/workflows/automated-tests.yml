@@ -1,0 +1,398 @@
+name: VeriQ Automated Tests
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:
+    inputs:
+      target_url:
+        description: 'Website URL to test'
+        required: true
+        default: 'https://example.com'
+      create_issue:
+        description: 'Create issue if tests fail'
+        type: boolean
+        default: true
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  issues: write
+
+env:
+  TARGET_URL: ${{ github.event.inputs.target_url || vars.TARGET_URL || 'https://example.com' }}
+
+jobs:
+  run-automated-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Testing Dependencies
+        run: |
+          npm init -y
+          npm install --no-save node-fetch@2 playwright @playwright/test
+          npx playwright install-deps chromium
+          npx playwright install chromium
+
+      - name: Run VeriQ Test Engine
+        id: run_tests
+        run: |
+          node -e '
+          const fs = require("fs");
+          const tls = require("tls");
+          const https = require("https");
+          const http = require("http");
+          const fetch = require("node-fetch");
+          const { chromium } = require("playwright");
+
+          async function runSuite() {
+            const targetUrl = process.env.TARGET_URL || "https://example.com";
+            const parsedUrl = new URL(targetUrl);
+            const isHttps = parsedUrl.protocol === "https:";
+            const origin = parsedUrl.origin;
+            const hostname = parsedUrl.hostname;
+            const port = parsedUrl.port || (isHttps ? 443 : 80);
+
+            const timestamp = new Date().toISOString();
+            const results = {
+              targetUrl,
+              timestamp,
+              summary: { total: 6, passed: 0, failed: 0, warnings: 0 },
+              tests: []
+            };
+
+            // 1. AVAILABILITY & HTTP STATUS
+            console.log("Checking availability for " + targetUrl);
+            const startAvail = Date.now();
+            let availTest = { id: "availability", name: "Website Availability", status: "fail", score: 0, details: {} };
+            try {
+              const resp = await fetch(targetUrl, { timeout: 12000, redirect: "follow" });
+              const duration = Date.now() - startAvail;
+              availTest.details = { httpStatus: resp.status, statusText: resp.statusText, durationMs: duration };
+              if (resp.status >= 200 && resp.status < 300) {
+                availTest.status = "pass";
+                availTest.score = 100;
+                availTest.summary = `Online: HTTP ${resp.status} (${duration}ms)`;
+                results.summary.passed++;
+              } else if (resp.status >= 300 && resp.status < 400) {
+                availTest.status = "warn";
+                availTest.score = 80;
+                availTest.summary = `Redirected: HTTP ${resp.status} (${duration}ms)`;
+                results.summary.warnings++;
+              } else {
+                availTest.status = "fail";
+                availTest.score = 0;
+                availTest.summary = `Error: HTTP ${resp.status}`;
+                results.summary.failed++;
+              }
+            } catch (err) {
+              availTest.status = "fail";
+              availTest.summary = "Unreachable: " + err.message;
+              results.summary.failed++;
+            }
+            results.tests.push(availTest);
+
+            // 2. SSL/TLS CERTIFICATE CHECK
+            console.log("Checking SSL/TLS certificate for " + hostname);
+            let sslTest = { id: "ssl", name: "SSL/TLS Certificate", status: "skip", score: 0, details: {} };
+            if (isHttps) {
+              await new Promise((resolve) => {
+                const socket = tls.connect({ host: hostname, port: port, servername: hostname, timeout: 8000 }, () => {
+                  const cert = socket.getPeerCertificate();
+                  const validTo = new Date(cert.valid_to);
+                  const daysLeft = Math.round((validTo - Date.now()) / (1000 * 60 * 60 * 24));
+                  const authorized = socket.authorized;
+                  socket.end();
+
+                  sslTest.details = {
+                    issuer: cert.issuer ? cert.issuer.O || cert.issuer.CN : "Unknown",
+                    validTo: cert.valid_to,
+                    daysRemaining: daysLeft,
+                    authorized: authorized
+                  };
+
+                  if (authorized && daysLeft > 14) {
+                    sslTest.status = "pass";
+                    sslTest.score = 100;
+                    sslTest.summary = `Valid SSL certificate (${daysLeft} days remaining, issued by ${sslTest.details.issuer})`;
+                    results.summary.passed++;
+                  } else if (authorized && daysLeft <= 14) {
+                    sslTest.status = "warn";
+                    sslTest.score = 60;
+                    sslTest.summary = `Certificate expiring soon! (${daysLeft} days remaining)`;
+                    results.summary.warnings++;
+                  } else {
+                    sslTest.status = "fail";
+                    sslTest.score = 0;
+                    sslTest.summary = "SSL Certificate invalid or unauthorized: " + (socket.authorizationError || "Validation error");
+                    results.summary.failed++;
+                  }
+                  resolve();
+                });
+                socket.on("error", (err) => {
+                  sslTest.status = "fail";
+                  sslTest.summary = "SSL Handshake error: " + err.message;
+                  results.summary.failed++;
+                  resolve();
+                });
+                socket.on("timeout", () => {
+                  socket.destroy();
+                  sslTest.status = "fail";
+                  sslTest.summary = "SSL Handshake timed out";
+                  results.summary.failed++;
+                  resolve();
+                });
+              });
+            } else {
+              sslTest.status = "fail";
+              sslTest.summary = "Website is served over unencrypted HTTP (No SSL/TLS)";
+              results.summary.failed++;
+            }
+            results.tests.push(sslTest);
+
+            // 3. SECURITY HEADERS
+            console.log("Checking Security Headers");
+            let secTest = { id: "security-headers", name: "Security Headers Audit", status: "pass", score: 100, details: {} };
+            try {
+              const resp = await fetch(targetUrl, { method: "HEAD", timeout: 8000 });
+              const headers = {};
+              resp.headers.forEach((v, k) => { headers[k.toLowerCase()] = v; });
+
+              const expected = ["strict-transport-security", "content-security-policy", "x-frame-options", "x-content-type-options", "referrer-policy"];
+              const present = [];
+              const missing = [];
+              expected.forEach(h => {
+                if (headers[h]) present.push(h);
+                else missing.push(h);
+              });
+
+              secTest.details = { present, missing };
+              secTest.score = Math.round((present.length / expected.length) * 100);
+              if (missing.length === 0) {
+                secTest.status = "pass";
+                secTest.summary = "All 5 core security headers configured correctly";
+                results.summary.passed++;
+              } else if (present.length >= 2) {
+                secTest.status = "warn";
+                secTest.summary = `${present.length}/5 security headers present. Missing: ${missing.join(", ")}`;
+                results.summary.warnings++;
+              } else {
+                secTest.status = "fail";
+                secTest.summary = `Critical security headers missing: ${missing.join(", ")}`;
+                results.summary.failed++;
+              }
+            } catch (e) {
+              secTest.status = "warn";
+              secTest.summary = "Header probe warning: " + e.message;
+              results.summary.warnings++;
+            }
+            results.tests.push(secTest);
+
+            // 4. SITEMAP & ROBOTS.TXT
+            console.log("Checking Sitemap & Robots.txt");
+            let crawlTest = { id: "crawl-files", name: "Sitemap & Robots.txt", status: "pass", score: 100, details: {} };
+            try {
+              const [robotsRes, sitemapRes] = await Promise.all([
+                fetch(`${origin}/robots.txt`, { timeout: 6000 }).catch(e => ({ status: 0 })),
+                fetch(`${origin}/sitemap.xml`, { timeout: 6000 }).catch(e => ({ status: 0 }))
+              ]);
+              const hasRobots = robotsRes.status === 200;
+              const hasSitemap = sitemapRes.status === 200;
+              crawlTest.details = { robotsStatus: robotsRes.status, sitemapStatus: sitemapRes.status };
+
+              if (hasRobots && hasSitemap) {
+                crawlTest.status = "pass";
+                crawlTest.score = 100;
+                crawlTest.summary = "Both robots.txt and sitemap.xml are present and accessible";
+                results.summary.passed++;
+              } else if (hasRobots || hasSitemap) {
+                crawlTest.status = "warn";
+                crawlTest.score = 70;
+                crawlTest.summary = `${hasRobots ? "robots.txt present" : "sitemap.xml present"}, but ${!hasRobots ? "robots.txt is missing" : "sitemap.xml is missing"}`;
+                results.summary.warnings++;
+              } else {
+                crawlTest.status = "warn";
+                crawlTest.score = 40;
+                crawlTest.summary = "Neither robots.txt nor sitemap.xml found at standard paths";
+                results.summary.warnings++;
+              }
+            } catch (e) {
+              crawlTest.status = "warn";
+              crawlTest.summary = "Crawl probe error: " + e.message;
+              results.summary.warnings++;
+            }
+            results.tests.push(crawlTest);
+
+            // 5. RESPONSE TIME CONSISTENCY (3 Pings)
+            console.log("Performing 3-ping latency consistency check");
+            let latencyTest = { id: "latency", name: "Response Time Consistency (3 Pings)", status: "pass", score: 100, details: {} };
+            const pings = [];
+            for (let i = 0; i < 3; i++) {
+              const t0 = Date.now();
+              try {
+                const r = await fetch(targetUrl, { timeout: 8000 });
+                pings.push(Date.now() - t0);
+              } catch (e) {
+                pings.push(null);
+              }
+            }
+            const validPings = pings.filter(p => typeof p === "number");
+            if (validPings.length > 0) {
+              const avg = Math.round(validPings.reduce((a, b) => a + b, 0) / validPings.length);
+              latencyTest.details = { pings, averageMs: avg };
+              if (avg < 500 && validPings.length === 3) {
+                latencyTest.status = "pass";
+                latencyTest.score = 100;
+                latencyTest.summary = `Fast and reliable: 3/3 pings successful, average ${avg}ms`;
+                results.summary.passed++;
+              } else if (avg < 1500 && validPings.length === 3) {
+                latencyTest.status = "pass";
+                latencyTest.score = 80;
+                latencyTest.summary = `Acceptable latency: 3/3 pings successful, average ${avg}ms`;
+                results.summary.passed++;
+              } else {
+                latencyTest.status = "warn";
+                latencyTest.score = 50;
+                latencyTest.summary = `High latency or packet drop: ${validPings.length}/3 pings successful, average ${avg}ms`;
+                results.summary.warnings++;
+              }
+            } else {
+              latencyTest.status = "fail";
+              latencyTest.score = 0;
+              latencyTest.summary = "All 3 response latency probes failed";
+              results.summary.failed++;
+            }
+            results.tests.push(latencyTest);
+
+            // 6. PLAYWRIGHT BROWSER SMOKE TEST
+            console.log("Launching Playwright Chromium for browser smoke test");
+            let browserTest = { id: "browser-smoke", name: "Headless Browser Smoke Test", status: "pass", score: 100, details: {} };
+            try {
+              const browser = await chromium.launch({ headless: true });
+              const page = await browser.newPage();
+              const consoleErrors = [];
+              page.on("console", msg => {
+                if (msg.type() === "error") consoleErrors.push(msg.text());
+              });
+              const navResp = await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 20000 });
+              const title = await page.title();
+              await browser.close();
+
+              browserTest.details = { pageTitle: title, consoleErrorCount: consoleErrors.length, consoleErrors: consoleErrors.slice(0, 5) };
+              if (consoleErrors.length === 0) {
+                browserTest.status = "pass";
+                browserTest.score = 100;
+                browserTest.summary = `Page loaded cleanly: "${title}", 0 client console errors`;
+                results.summary.passed++;
+              } else {
+                browserTest.status = "warn";
+                browserTest.score = 75;
+                browserTest.summary = `Page loaded: "${title}", but ${consoleErrors.length} client console error(s) logged`;
+                results.summary.warnings++;
+              }
+            } catch (err) {
+              browserTest.status = "fail";
+              browserTest.score = 0;
+              browserTest.summary = "Browser execution failed: " + err.message;
+              results.summary.failed++;
+            }
+            results.tests.push(browserTest);
+
+            // SAVE ARTIFACTS
+            if (!fs.existsSync("test-results")) {
+              fs.mkdirSync("test-results", { recursive: true });
+            }
+            const dateStr = new Date().toISOString().replace(/[:.]/g, "-");
+            fs.writeFileSync("test-results/latest.json", JSON.stringify(results, null, 2));
+            fs.writeFileSync(`test-results/run-${dateStr}.json`, JSON.stringify(results, null, 2));
+
+            // OUTPUT GITHUB STEP SUMMARY
+            const summaryMd = `## 🛡️ VeriQ Automated Test Suite Report
+            **Target URL:** \`${targetUrl}\`
+            **Execution Date:** ${timestamp}
+            **Status:** ${results.summary.failed === 0 ? "✅ PASSED" : "❌ FAILED"} (${results.summary.passed} Passed, ${results.summary.warnings} Warnings, ${results.summary.failed} Failed)
+
+            | Test | Status | Score | Details |
+            |---|---|---|---|
+            ${results.tests.map(t => `| **${t.name}** | ${t.status === "pass" ? "🟢 PASS" : (t.status === "warn" ? "🟡 WARN" : "🔴 FAIL")} | ${t.score !== null ? t.score + "/100" : "N/A"} | ${t.summary} |`).join("\n")}
+            `;
+
+            if (process.env.GITHUB_STEP_SUMMARY) {
+              fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, summaryMd);
+            }
+
+            console.log("\n==========================================");
+            console.log(`VeriQ Suite Finished: ${results.summary.passed} Pass, ${results.summary.warnings} Warn, ${results.summary.failed} Fail`);
+            console.log("==========================================\n");
+
+            // Check critical failure
+            if (results.summary.failed > 0) {
+              fs.writeFileSync("test-results/CRITICAL_FAILURE.txt", `Critical failure: ${results.summary.failed} test(s) failed.`);
+            }
+          }
+
+          runSuite().catch(err => {
+            console.error("Runner crashed:", err);
+            process.exit(1);
+          });
+          '
+
+      - name: Commit & Push Test Run History
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action [VeriQ]"
+          git add test-results/
+          if git diff --staged --quiet; then
+            echo "No test result changes to commit."
+          else
+            git commit -m "chore(tests): record automated test results for ${TARGET_URL}"
+            git push origin main || echo "Push skipped or branch protected."
+          fi
+
+      - name: Upload Test Results Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: veriq-test-results
+          path: test-results/
+          retention-days: 30
+
+      - name: Create GitHub Alert Issue on Critical Failure
+        if: ${{ hashFiles('test-results/CRITICAL_FAILURE.txt') != '' && (github.event.inputs.create_issue != 'false') }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let latest = {};
+            try {
+              latest = JSON.parse(fs.readFileSync('test-results/latest.json', 'utf8'));
+            } catch(e) {}
+            
+            const targetUrl = latest.targetUrl || process.env.TARGET_URL;
+            const failedTests = (latest.tests || []).filter(t => t.status === 'fail');
+            
+            const issueBody = `## 🚨 VeriQ Automated Test Failure Alert
+            
+            Automated testing detected **${failedTests.length} critical failure(s)** on **${targetUrl}**.
+            
+            ### Failed Tests:
+            ${failedTests.map(t => `- **${t.name}**: ${t.summary}`).join('\n')}
+            
+            Please review the full report in the GitHub Actions run summary and the committed \`test-results/latest.json\` artifact.`;
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 VeriQ Test Failure: ${targetUrl}`,
+              body: issueBody,
+              labels: ['bug', 'automated-test', 'veriQ']
+            });
