@@ -2165,3 +2165,136 @@ ol {
     border-top: 1px solid #CBD5E1 !important;
   }
 }
+
+/* --------------------------------------------------------------------------
+   26. Live Process HUD & Dynamic Testing Animations
+   -------------------------------------------------------------------------- */
+.live-process-hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, #1E293B 0%, #0F172A 100%);
+  border: 1px solid #3B82F6;
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  margin-top: 10px;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+  animation: hudSlideDown 0.3s ease-out;
+}
+
+@keyframes hudSlideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hud-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.hud-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #3B82F6;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
+.hud-inline-spinner {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+
+.hud-live-tag {
+  background: #EF4444;
+  color: #FFFFFF;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  animation: pulse 1.5s infinite;
+}
+
+.hud-step-pill {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60A5FA;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+
+.hud-title {
+  color: #F8FAFC;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hud-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.hud-percent {
+  color: #60A5FA;
+  font-weight: 700;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Category Card Live Testing Animation */
+.category-card {
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.category-card.testing-active {
+  border: 1.5px solid #3B82F6 !important;
+  background: linear-gradient(135deg, #FFFFFF 0%, #EFF6FF 100%) !important;
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.3) !important;
+  animation: cardPulse 1.5s infinite alternate ease-in-out;
+}
+
+@keyframes cardPulse {
+  0% { box-shadow: 0 0 8px rgba(59, 130, 246, 0.2); }
+  100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.45); }
+}
+
+.category-card.test-completed {
+  border-color: #E2E8F0;
+  transition: border-color 0.4s ease;
+}
+
+/* Test Card Smooth Entrance */
+.test-card {
+  animation: fadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

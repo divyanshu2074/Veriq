@@ -42,16 +42,16 @@ VeriQ organizes over 80 automated tests across 10 structured quality categories:
 
 | Icon | Category | ID | Description | Tests |
 |:---:|:---|:---|:---|:---:|
-| 🎯 | **Functional & UI** | `01-functional-ui` | Validates interactive forms, button states, DOM structure, viewport responsiveness, and broken visual layouts. | 15 |
-| ⚡ | **Performance & Speed** | `02-performance` | Evaluates TTFB latency, resource payload sizes, CSS/JS minification, caching headers, and Core Web Vitals. | 12 |
-| ♿ | **Accessibility (a11y)** | `03-accessibility` | Audits WCAG 2.1 AA compliance: contrast ratios, alt text, ARIA attributes, semantic headings, and tab navigation. | 16 |
-| 🔒 | **Security & Privacy** | `04-security` | Analyzes SSL/TLS configurations, HSTS, CSP, X-Frame-Options, mixed content risks, cookies, and vulnerability flags. | 16 |
-| 📱 | **Cross-Browser & Device** | `05-cross-browser` | Validates responsive meta tags, touch targets, CSS feature queries, vendor prefixes, and viewport scaling. | 12 |
+| 🔧 | **Functional** | `01-functional` | Validates forms, button states, DOM structure, viewport responsiveness, and broken visual layouts. | 10 |
+| ⚡ | **Performance** | `02-performance` | Evaluates TTFB latency, resource payload sizes, CSS/JS minification, caching headers, and Core Web Vitals. | 10 |
+| 🔒 | **Security** | `03-security` | Analyzes SSL/TLS configurations, HSTS, CSP, X-Frame-Options, mixed content risks, cookies, and vulnerability flags. | 12 |
+| ♿ | **Accessibility** | `04-accessibility` | Audits WCAG 2.1 AA compliance: contrast ratios, alt text, ARIA attributes, semantic headings, and tab navigation. | 12 |
+| 🖥️ | **Compatibility** | `05-compatibility` | Validates responsive meta tags, touch targets, CSS feature queries, vendor prefixes, and viewport scaling. | 10 |
 | 🌐 | **Health & SEO** | `06-health-seo` | Checks HTTP availability, redirect hops, page titles, meta descriptions, sitemap.xml, robots.txt, and indexability. | 12 |
-| ⏱️ | **Reliability Testing** | `07-reliability` | Measures response latency, multi-ping availability, server error rates, latency variance, and caching consistency. | 6 |
-| 🌍 | **Localization Testing** | `08-localization` | Audits HTML lang tags, UTF-8 charsets, multi-language hreflang tags, RTL direction, date/currency formats, and translation readiness. | 8 |
+| ⏱️ | **Reliability** | `07-reliability` | Measures response latency, multi-ping availability, server error rates, latency variance, and caching consistency. | 6 |
+| 🌍 | **Localization** | `08-localization` | Audits HTML lang tags, UTF-8 charsets, multi-language hreflang tags, RTL direction, date/currency formats, and translation readiness. | 8 |
 | 💻 | **Code Quality** | `09-code-quality` | Checks HTML5 doctype, W3C validation, head element ordering, inline script safety, dependencies, and performance budget. | 10 |
-| 🔬 | **Specialized Testing** | `10-specialized` | Tests PWA manifests, Service Worker registration, offline caching, WebSockets, file uploads, and favicon suites. | 10 |
+| 🔬 | **Specialized** | `10-specialized` | Tests PWA manifests, Service Worker registration, offline caching, WebSockets, file uploads, and favicon suites. | 10 |
 
 ---
 
@@ -171,41 +171,15 @@ function doPost(e) {
 
 ---
 
-## 🤖 Setting Up Automated Testing (CI/CD)
+## ⚡ Instant In-Browser Automated Testing
 
-The repository includes a ready-to-run GitHub Actions workflow located at [`.github/workflows/automated-tests.yml`](file:///.github/workflows/automated-tests.yml).
+VeriQ is built to work immediately right in your browser with zero configuration:
 
-### Features:
-- Runs automatically on a **6-hour schedule** (`0 */6 * * *`).
-- Can be triggered manually via **Workflow Dispatch** with custom URL inputs.
-- Verifies availability, SSL expiration, security headers, crawl files, response times, and executes a headless **Playwright** browser smoke test.
-- Automatically records history to `test-results/latest.json`.
-- Files a detailed GitHub issue if critical tests fail.
-
-### Configuration:
-1. Go to your repository on GitHub.
-2. Click **Settings** ➔ **Secrets and variables** ➔ **Actions**.
-3. Under **Variables**, click **New repository variable**:
-   - Name: `TARGET_URL`
-   - Value: `https://your-production-site.com`
-4. Go to the **Actions** tab, select **VeriQ Automated Tests**, and click **Run workflow**.
-
----
-
-## ⚡ Running Load Tests (k6)
-
-VeriQ includes a dedicated load testing workflow located at [`.github/workflows/load-test.yml`](file:///.github/workflows/load-test.yml) powered by **Grafana k6**.
-
-### How to Trigger:
-1. Navigate to the **Actions** tab on your GitHub repository.
-2. Select **VeriQ Load Test** from the left workflow menu.
-3. Click **Run workflow** and configure the test parameters:
-   - **Target URL**: The endpoint to test (e.g. `https://your-staging-site.com`).
-   - **Virtual Users (VUs)**: Concurrency level (default: `10`).
-   - **Duration**: Duration of peak traffic (default: `30s`).
-   - **Ramp-up**: Time to build up to peak concurrency (default: `10s`).
-   - **Disclaimer**: Confirm ownership or testing authorization.
-4. Click **Run workflow**. The job will execute and output a rich Markdown performance summary table into the GitHub Actions run overview.
+1. **Enter any public URL** in the top navigation bar.
+2. Click **Run All Tests** (or click **Run Category** to test just the active module).
+3. **Watch the live process HUD** and glowing animated cards as each of the 10 quality categories is analyzed in real-time.
+4. **Inspect details**: Click on any test card to expand full technical findings, WCAG contrast details, security headers, and step-by-step remediation suggestions.
+5. **Review History**: All runs are automatically saved to the **History** tab where you can search, sort, re-test, or export standalone HTML/CSV audit reports at any time.
 
 ---
 

@@ -248,27 +248,51 @@ window.VeriQ.ui = (function() {
    * @param {string} label
    */
   function setProgress(current, total, label) {
-    const progressContainer = document.getElementById('progress-container') ||
-      document.querySelector('.progress-bar-container');
+    const progressContainer = document.getElementById('progress-wrapper') ||
+      document.getElementById('progress-container') ||
+      document.querySelector('.progress-bar-container, .progress-wrapper');
 
     if (progressContainer) {
       progressContainer.style.display = 'block';
     }
 
     VeriQ.core.reporter.updateProgress(current, total, label);
+
+    // Update Live Process HUD
+    const hud = document.getElementById('live-process-hud');
+    if (hud) {
+      hud.style.display = 'flex';
+      const hudStep = document.getElementById('hud-step-text');
+      const hudTitle = document.getElementById('hud-test-title');
+      const hudProgress = document.getElementById('hud-progress-percent');
+      if (hudStep) hudStep.textContent = total > 0 ? `[${Math.min(current + 1, total)}/${total}]` : '';
+      if (hudTitle) hudTitle.textContent = label;
+      if (hudProgress) {
+        const pct = total > 0 ? Math.round((current / total) * 100) : 0;
+        hudProgress.textContent = `${pct}%`;
+      }
+    }
   }
 
   /**
    * Hides the global progress UI
    */
   function hideProgress() {
-    const progressContainer = document.getElementById('progress-container') ||
-      document.querySelector('.progress-bar-container');
+    const progressContainer = document.getElementById('progress-wrapper') ||
+      document.getElementById('progress-container') ||
+      document.querySelector('.progress-bar-container, .progress-wrapper');
 
     if (progressContainer) {
       setTimeout(() => {
         progressContainer.style.display = 'none';
-      }, 400);
+      }, 500);
+    }
+
+    const hud = document.getElementById('live-process-hud');
+    if (hud) {
+      setTimeout(() => {
+        hud.style.display = 'none';
+      }, 500);
     }
   }
 
@@ -314,16 +338,16 @@ window.VeriQ.ui = (function() {
 
   // The 10 core VeriQ testing modules
   const DEFAULT_MODULE_IDS = [
-    'seo',
-    'performance',
-    'accessibility',
-    'security',
-    'pwa',
-    'links',
-    'images',
-    'mobile',
-    'headers',
-    'social'
+    '01-functional',
+    '02-performance',
+    '03-security',
+    '04-accessibility',
+    '05-compatibility',
+    '06-health-seo',
+    '07-reliability',
+    '08-localization',
+    '09-code-quality',
+    '10-specialized'
   ];
 
   const app = VeriQ.core.app = {
@@ -735,45 +759,55 @@ window.VeriQ.ui = (function() {
       app.setRunning(true);
       const overallStart = performance.now();
 
-      // Determine modules to run (all registered modules, or default 10 modules)
-      const registeredKeys = Object.keys(VeriQ.modules);
-      const moduleIds = registeredKeys.length > 0
-        ? registeredKeys
-        : DEFAULT_MODULE_IDS;
+      // Clear previous active states on category cards
+      document.querySelectorAll('.category-card').forEach(card => {
+        card.classList.remove('testing-active');
+      });
+
+      const moduleIds = DEFAULT_MODULE_IDS;
 
       reporter.updateStatus('Connecting & fetching website...', 'running');
-      ui.setProgress(0, moduleIds.length, 'Fetching website contents...');
+      ui.setProgress(0, moduleIds.length, 'Connecting to website via proxy...');
 
       try {
         // Step 1: Pre-fetch website context to avoid 10 redundant proxy calls
         const context = await fetcher.buildContext(targetUrl);
-
-        if (context.fetchResult && context.fetchResult.error && context.fetchResult.status === 0) {
-          app.setRunning(false);
-          reporter.updateStatus('Fetch failed', 'error');
-          ui.hideProgress();
-          ui.toast(`Could not connect to target website: ${context.fetchResult.error}`, 'error', 6000);
-          return;
-        }
 
         const allResults = {};
 
         // Step 2-5: Iterate through all modules sequentially
         for (let i = 0; i < moduleIds.length; i++) {
           const modId = moduleIds[i];
+          const modDef = VeriQ.modules[modId];
+          const modTitle = modDef ? modDef.name : modId;
 
-          // 2. Navigate to module page automatically
-          app.navigate(modId);
+          // Pulse animation on the category card in dashboard
+          const catCard = document.querySelector(`.category-card[data-module="${modId}"]`);
+          if (catCard) {
+            catCard.classList.add('testing-active');
+            const scoreEl = catCard.querySelector('.cat-score');
+            if (scoreEl) {
+              scoreEl.innerHTML = '<span class="hud-inline-spinner">⚙️</span> <span style="font-size:12px;color:#3B82F6;">Testing...</span>';
+            }
+          }
 
-          // 3. Update progress
-          ui.setProgress(i, moduleIds.length, `Testing category [${i + 1}/${moduleIds.length}]: ${modId.toUpperCase()}`);
+          // Update progress HUD
+          ui.setProgress(i, moduleIds.length, `Running ${modTitle} tests...`);
 
-          // 4 & 5. Run module tests and render results progressively
+          // Run module tests and render results progressively
           const modResults = await app.runModule(modId, targetUrl, context);
           allResults[modId] = modResults;
 
+          if (catCard) {
+            catCard.classList.remove('testing-active');
+            catCard.classList.add('test-completed');
+          }
+
+          // Progressively update dashboard scores and progress so user sees live animation
+          reporter.updateDashboard(allResults);
+
           // Brief pause for UI transition smoothness
-          await utils.wait(200);
+          await utils.wait(150);
         }
 
         const overallDuration = Math.round(performance.now() - overallStart);
@@ -807,40 +841,30 @@ window.VeriQ.ui = (function() {
         storage.saveRun(runData);
         VeriQ.state.lastRunTime = runData.timestamp;
 
-        // Step 8: Optionally push to GitHub or Google Sheets if enabled
+        // Step 8: Update history page and dashboard history
+        app.renderHistoryPage();
+
+        // Optional push to Sheets if enabled
         const settings = storage.getSettings();
-
-        if (settings.github?.enabled) {
-          ui.toast('Syncing test results to GitHub repository...', 'info', 2500);
-          storage.pushToGitHub(runData).then(res => {
-            if (res.success) {
-              ui.toast('Successfully saved results to GitHub!', 'success');
-            } else {
-              ui.toast(`GitHub sync failed: ${res.message}`, 'error', 5000);
-            }
-          });
-        }
-
         if (settings.sheets?.enabled) {
-          ui.toast('Appending row to Google Sheets...', 'info', 2500);
+          ui.toast('Syncing test results to Google Sheets...', 'info', 2000);
           storage.pushToGoogleSheets(runData).then(res => {
             if (res.success) {
-              ui.toast('Successfully updated Google Sheet!', 'success');
-            } else {
-              ui.toast(`Google Sheets sync failed: ${res.message}`, 'error', 5000);
+              ui.toast('Saved results to Google Sheets!', 'success');
             }
           });
         }
+        if (settings.github?.enabled) {
+          storage.pushToGitHub(runData);
+        }
 
-        // Navigate back to dashboard for comprehensive review
-        app.navigate('dashboard');
         ui.setProgress(moduleIds.length, moduleIds.length, 'All tests completed!');
         reporter.updateStatus('Done', 'done');
 
         setTimeout(() => {
           ui.hideProgress();
           app.setRunning(false);
-          ui.toast(`Suite finished in ${utils.formatTime(overallDuration)}! Overall Score: ${overallScore}%`, 'success', 5000);
+          ui.toast(`🎉 Suite finished in ${utils.formatTime(overallDuration)}! Overall Score: ${overallScore}%`, 'success', 5000);
         }, 500);
 
       } catch (err) {
@@ -848,7 +872,6 @@ window.VeriQ.ui = (function() {
         app.setRunning(false);
         reporter.updateStatus('Error', 'error');
         ui.hideProgress();
-        ui.toast(`Suite execution stopped: ${err.message}`, 'error', 6000);
       }
     },
 
@@ -890,14 +913,38 @@ window.VeriQ.ui = (function() {
         });
       }
 
-      // 2. Module Run Buttons Delegation
+      // 2. Module Run Buttons & Run Category Button
+      const runCategoryBtn = document.getElementById('btn-run-category');
+      if (runCategoryBtn) {
+        runCategoryBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const curPage = app.getCurrentPage();
+          if (curPage && (curPage.startsWith('0') || curPage.startsWith('10'))) {
+            app.runModule(curPage);
+          } else {
+            app.runAll();
+          }
+        });
+      }
+
       document.addEventListener('click', (e) => {
         const runModBtn = e.target.closest('[data-action="run-module"], [data-run-module], .btn-run-category');
-        if (runModBtn) {
+        if (runModBtn && runModBtn !== runCategoryBtn) {
           e.preventDefault();
           const modId = runModBtn.getAttribute('data-module') || runModBtn.getAttribute('data-run-module');
           if (modId) {
             app.runModule(modId);
+          }
+        }
+      });
+
+      // 2b. Click Category Cards on Dashboard to navigate to that category
+      document.addEventListener('click', (e) => {
+        const catCard = e.target.closest('.category-card[data-module]');
+        if (catCard && !e.target.closest('button, a')) {
+          const modId = catCard.getAttribute('data-module');
+          if (modId) {
+            app.navigate(modId);
           }
         }
       });
@@ -917,6 +964,23 @@ window.VeriQ.ui = (function() {
         }
       });
 
+      // 3b. History search, sort, and export
+      const histSearch = document.getElementById('history-search');
+      if (histSearch) {
+        histSearch.addEventListener('input', () => app.renderHistoryPage());
+      }
+      const histSort = document.getElementById('history-sort');
+      if (histSort) {
+        histSort.addEventListener('change', () => app.renderHistoryPage());
+      }
+      const histExportAll = document.getElementById('btn-export-history');
+      if (histExportAll) {
+        histExportAll.addEventListener('click', () => {
+          storage.exportCsv();
+          ui.toast('Exported history to CSV', 'info');
+        });
+      }
+
       // 4. Test Filter Buttons Delegation
       document.addEventListener('click', (e) => {
         const filterBtn = e.target.closest('[data-filter]');
@@ -932,6 +996,58 @@ window.VeriQ.ui = (function() {
           }
         }
       });
+
+      // 5. Export JSON / CSV / HTML / Full Data
+      const exportAllDataBtn = document.getElementById('btn-export-all');
+      if (exportAllDataBtn) {
+        exportAllDataBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const allData = {
+            settings: storage.getSettings(),
+            runs: storage.getRuns()
+          };
+          storage.exportJson(allData);
+          ui.toast('Exported full database backup to JSON', 'info');
+        });
+      }
+
+      const importDataBtn = document.getElementById('btn-import-data');
+      const importInput = document.getElementById('import-file-input');
+      if (importDataBtn && importInput) {
+        importDataBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          importInput.click();
+        });
+        importInput.addEventListener('change', async (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const res = await storage.importJson(file);
+            if (res.success) {
+              ui.toast('Imported test data successfully!', 'success');
+              app.renderHistoryPage();
+              reporter.updateDashboard(VeriQ.state.lastResults || {});
+            } else {
+              ui.toast(`Import failed: ${res.message}`, 'error');
+            }
+          }
+        });
+      }
+
+      const clearAllBtn = document.getElementById('btn-clear-all-data');
+      if (clearAllBtn) {
+        clearAllBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          const confirmed = await ui.confirm('Permanently reset all settings and wipe all test history?');
+          if (confirmed) {
+            storage.clearHistory();
+            storage.resetSettings();
+            app.applySettingsToForm();
+            app.renderHistoryPage();
+            reporter.updateDashboard({});
+            ui.toast('All local data cleared and reset to defaults', 'info');
+          }
+        });
+      }
 
       // 5. Export JSON / CSV / HTML
       document.addEventListener('click', (e) => {
@@ -1185,16 +1301,45 @@ window.VeriQ.ui = (function() {
      * Renders test run history table in history page if container exists
      */
     renderHistoryPage() {
-      const historyContainer = document.getElementById('history-table-body') ||
-        document.querySelector('.history-list-container');
+      const historyTable = document.getElementById('history-table');
+      const historyTbody = document.getElementById('history-tbody') ||
+        document.getElementById('history-table-body');
+      const historyEmpty = document.getElementById('history-empty');
 
-      if (!historyContainer) return;
+      if (!historyTbody) return;
 
-      const runs = storage.getRuns();
+      let runs = storage.getRuns() || [];
+
+      // Check search input filter
+      const searchInput = document.getElementById('history-search');
+      const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+      if (query) {
+        runs = runs.filter(r => (r.url && r.url.toLowerCase().includes(query)) || (r.id && r.id.toLowerCase().includes(query)));
+      }
+
+      // Check sort select
+      const sortSelect = document.getElementById('history-sort');
+      const sortBy = sortSelect ? sortSelect.value : 'newest';
+      if (sortBy === 'oldest') {
+        runs.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+      } else if (sortBy === 'score-high') {
+        runs.sort((a, b) => (b.overallScore || 0) - (a.overallScore || 0));
+      } else if (sortBy === 'score-low') {
+        runs.sort((a, b) => (a.overallScore || 0) - (b.overallScore || 0));
+      } else {
+        // default newest first
+        runs.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+      }
+
       if (runs.length === 0) {
-        historyContainer.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 24px; color: #94A3B8;">No historical test runs found.</td></tr>';
+        if (historyEmpty) historyEmpty.style.display = 'block';
+        if (historyTable) historyTable.style.display = 'none';
+        historyTbody.innerHTML = '';
         return;
       }
+
+      if (historyEmpty) historyEmpty.style.display = 'none';
+      if (historyTable) historyTable.style.display = 'table';
 
       let rowsHtml = '';
       for (const run of runs) {
@@ -1206,27 +1351,61 @@ window.VeriQ.ui = (function() {
 
         rowsHtml += `
           <tr data-run-id="${run.id}">
-            <td><strong>${dateStr}</strong><br><small style="color: #64748B;">${run.id}</small></td>
-            <td><a href="${utils.escapeHtml(run.url)}" target="_blank" rel="noopener noreferrer" style="color: #60A5FA; text-decoration: none;">${utils.escapeHtml(run.url)}</a></td>
-            <td><span style="font-weight: 700; color: ${scoreColor};">${score}%</span> <small>(${grade})</small></td>
+            <td><strong>${dateStr}</strong><br><small style="color: #64748B;">ID: ${run.id}</small></td>
             <td>
-              <span style="color: #10B981;">${summary.pass || 0}P</span> / 
-              <span style="color: #EF4444;">${summary.fail || 0}F</span> / 
-              <span style="color: #F59E0B;">${summary.warn || 0}W</span>
+              <a href="${utils.escapeHtml(run.url)}" target="_blank" rel="noopener noreferrer" style="color: #3B82F6; font-weight: 600; text-decoration: none;">${utils.escapeHtml(run.url)}</a>
+              <div style="font-size: 11px; color: #64748B; margin-top: 2px;">Duration: ${utils.formatTime(run.duration || 0)}</div>
             </td>
-            <td>${utils.formatTime(run.duration || 0)}</td>
             <td>
-              <button class="btn btn-sm btn-export-run" data-id="${run.id}" title="Export HTML report" style="padding: 4px 8px; font-size: 12px; background: #334155; color: #fff; border: 1px solid #475569; border-radius: 4px; cursor: pointer;">Export</button>
-              <button class="btn btn-sm btn-delete-run" data-id="${run.id}" title="Delete run" style="padding: 4px 8px; font-size: 12px; background: #DC2626; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-left: 4px;">✕</button>
+              <span class="score-badge" style="background: ${scoreColor}18; color: ${scoreColor}; border: 1.5px solid ${scoreColor}40; padding: 4px 10px; border-radius: 9999px; font-weight: 700; font-size: 13px;">
+                ${score}% (${grade})
+              </span>
+            </td>
+            <td>
+              <span style="color: #10B981; font-weight: 600;">✓ ${summary.pass || 0}</span>
+              <span style="color: #EF4444; font-weight: 600; margin-left: 6px;">✕ ${summary.fail || 0}</span>
+              <span style="color: #F59E0B; font-weight: 600; margin-left: 6px;">⚠ ${summary.warn || 0}</span>
+            </td>
+            <td>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button class="btn btn-sm btn-inspect-run" data-id="${run.id}" title="Inspect in Dashboard" style="padding: 4px 8px; font-size: 12px; background: #2563EB; color: #fff; border-radius: 4px; border:none; cursor:pointer;">Inspect</button>
+                <button class="btn btn-sm btn-retest-run" data-url="${utils.escapeHtml(run.url)}" title="Re-run all tests" style="padding: 4px 8px; font-size: 12px; background: #059669; color: #fff; border-radius: 4px; border:none; cursor:pointer;">Re-test</button>
+                <button class="btn btn-sm btn-export-run" data-id="${run.id}" title="Export HTML report" style="padding: 4px 8px; font-size: 12px; background: #334155; color: #fff; border: 1px solid #475569; border-radius: 4px; cursor:pointer;">Report</button>
+                <button class="btn btn-sm btn-delete-run" data-id="${run.id}" title="Delete run" style="padding: 4px 8px; font-size: 12px; background: #DC2626; color: #fff; border:none; border-radius: 4px; cursor:pointer;">✕</button>
+              </div>
             </td>
           </tr>
         `;
       }
 
-      historyContainer.innerHTML = rowsHtml;
+      historyTbody.innerHTML = rowsHtml;
 
       // Event delegation for history action buttons
-      historyContainer.querySelectorAll('.btn-export-run').forEach(btn => {
+      historyTbody.querySelectorAll('.btn-inspect-run').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const runId = btn.getAttribute('data-id');
+          const run = storage.getRunById(runId);
+          if (run) {
+            app.setUrl(run.url);
+            VeriQ.state.lastResults = run.results || {};
+            reporter.updateDashboard(run.results || {});
+            app.navigate('dashboard');
+            ui.toast(`Loaded results for ${run.url} from ${utils.formatDate(run.timestamp)}`, 'info');
+          }
+        });
+      });
+
+      historyTbody.querySelectorAll('.btn-retest-run').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const runUrl = btn.getAttribute('data-url');
+          if (runUrl) {
+            app.setUrl(runUrl);
+            app.runAll(runUrl);
+          }
+        });
+      });
+
+      historyTbody.querySelectorAll('.btn-export-run').forEach(btn => {
         btn.addEventListener('click', () => {
           const runId = btn.getAttribute('data-id');
           const run = storage.getRunById(runId);
@@ -1234,13 +1413,14 @@ window.VeriQ.ui = (function() {
         });
       });
 
-      historyContainer.querySelectorAll('.btn-delete-run').forEach(btn => {
+      historyTbody.querySelectorAll('.btn-delete-run').forEach(btn => {
         btn.addEventListener('click', async () => {
           const runId = btn.getAttribute('data-id');
-          const confirmed = await ui.confirm('Delete this test run?');
+          const confirmed = await ui.confirm('Permanently delete this test run?');
           if (confirmed) {
             storage.deleteRun(runId);
             app.renderHistoryPage();
+            reporter.updateDashboard(VeriQ.state.lastResults || {});
             ui.toast('Run deleted', 'info');
           }
         });

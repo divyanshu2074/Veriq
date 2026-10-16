@@ -36,24 +36,23 @@ window.VeriQ.modules = window.VeriQ.modules || {};
   }
 
   async function fetchViaProxy(url, timeoutMs = 6000) {
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
-
-    try {
-      const resp = await fetch(proxyUrl, { signal: controller.signal });
-      clearTimeout(timer);
-      if (!resp.ok) {
-        return { ok: false, status: resp.status, contents: null };
+    if (window.VeriQ && window.VeriQ.core && window.VeriQ.core.fetcher) {
+      try {
+        const res = await window.VeriQ.core.fetcher.fetch(url, { timeout: timeoutMs });
+        return {
+          ok: res.status >= 200 && res.status < 400,
+          status: res.status,
+          contents: res.body || '',
+          headers: res.headers || {}
+        };
+      } catch (e) {
+        return { ok: false, status: 0, contents: null };
       }
-      const data = await resp.json();
-      return {
-        ok: true,
-        status: data.status ? data.status.http_code : 200,
-        contents: data.contents || ''
-      };
+    }
+    try {
+      const resp = await fetch(url, { mode: 'no-cors' });
+      return { ok: true, status: 200, contents: '' };
     } catch (err) {
-      clearTimeout(timer);
       return { ok: false, status: 0, contents: null };
     }
   }

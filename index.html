@@ -93,6 +93,19 @@
           </div>
           <div id="progress-text" class="progress-text">Ready</div>
         </div>
+
+        <!-- Live Process HUD Banner (animated live test monitor) -->
+        <div id="live-process-hud" class="live-process-hud" style="display:none">
+          <div class="hud-left">
+            <span class="hud-spinner"></span>
+            <span class="hud-live-tag">LIVE TEST</span>
+            <span id="hud-step-text" class="hud-step-pill">[1/10]</span>
+            <span id="hud-test-title" class="hud-title">Connecting to target website...</span>
+          </div>
+          <div class="hud-right">
+            <span id="hud-progress-percent" class="hud-percent">0%</span>
+          </div>
+        </div>
       </header>
 
       <!-- Content Area with All Pages -->
@@ -716,9 +729,14 @@
                 <label class="form-label">Proxy Server</label>
                 <div class="radio-group" id="proxy-selector">
                   <label class="radio-option">
-                    <input type="radio" name="proxy" value="allorigins" checked>
+                    <input type="radio" name="proxy" value="microlink" checked>
                     <span class="radio-custom"></span>
-                    <span class="radio-text">allorigins.win (Recommended)</span>
+                    <span class="radio-text">api.microlink.io (Recommended — Fastest &amp; Real Headers)</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="proxy" value="allorigins">
+                    <span class="radio-custom"></span>
+                    <span class="radio-text">allorigins.win</span>
                   </label>
                   <label class="radio-option">
                     <input type="radio" name="proxy" value="corsproxy">
@@ -751,8 +769,8 @@
 
             <!-- GitHub Integration -->
             <div class="card settings-card">
-              <h2 class="card-title">🐙 GitHub Integration</h2>
-              <p class="card-desc">Save test results to your GitHub repository for history and sharing.</p>
+              <h2 class="card-title">🐙 GitHub Repository Sync (Optional)</h2>
+              <p class="card-desc">Optional: Back up JSON test runs to your GitHub repository branch for long-term audit trail and team sharing. (Not required to use the web app!).</p>
               <div class="form-group">
                 <label class="toggle-label">
                   <input type="checkbox" id="github-enabled" class="toggle-checkbox">

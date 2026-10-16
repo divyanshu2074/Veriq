@@ -137,6 +137,34 @@ VeriQ.core.reporter = (function() {
    * @param {string} [size='md'] - 'lg' | 'md' | 'sm'
    * @returns {HTMLElement} Score circle wrapper element
    */
+  /**
+   * Animates a numerical counter from 0 to target value
+   */
+  function animateCountUp(element, endVal, duration = 750) {
+    if (!element || typeof endVal !== 'number' || isNaN(endVal)) return;
+    const startVal = 0;
+    const startTime = performance.now();
+    function step(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3); // Cubic ease-out
+      const current = Math.round(startVal + (endVal - startVal) * ease);
+      element.textContent = current.toString();
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        element.textContent = endVal.toString();
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  /**
+   * Creates SVG donut score circle element with smooth animations
+   * @param {number|null} score - 0 to 100 or null
+   * @param {string} [size='md'] - 'lg' | 'md' | 'sm'
+   * @returns {HTMLElement} Score circle wrapper element
+   */
   function createScoreCircle(score, size = 'md') {
     const isValNull = score === null || score === undefined || isNaN(score);
     const validScore = isValNull ? 0 : Math.max(0, Math.min(100, Math.round(score)));
@@ -176,20 +204,34 @@ VeriQ.core.reporter = (function() {
     wrapper.innerHTML = `
       <svg viewBox="0 0 100 100" width="${cfg.width}" height="${cfg.height}" class="score-donut-svg" aria-label="Score: ${displayText}">
         <!-- Background Track -->
-        <circle cx="50" cy="50" r="${radius}" fill="none" stroke="currentColor" class="score-track" stroke-width="${cfg.strokeWidth}" opacity="0.18"></circle>
+        <circle cx="50" cy="50" r="${radius}" fill="none" stroke="currentColor" class="score-track" stroke-width="${cfg.strokeWidth}" opacity="0.15"></circle>
         <!-- Animated Score Value Circle -->
         <circle cx="50" cy="50" r="${radius}" fill="none" stroke="${strokeColor}" stroke-width="${cfg.strokeWidth}"
-          stroke-dasharray="${strokeDash}" stroke-dashoffset="0" stroke-linecap="round"
+          stroke-dasharray="0 ${circumference}" stroke-dashoffset="0" stroke-linecap="round"
           transform="rotate(-90 50 50)" class="score-indicator-circle"
-          style="transition: stroke-dasharray 0.8s ease-out, stroke 0.4s ease;">
+          style="transition: stroke-dasharray 0.9s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.4s ease;">
         </circle>
         <!-- Score Text -->
         <text x="50" y="${textY}" text-anchor="middle" font-size="${cfg.fontSize}" font-weight="700" fill="currentColor" class="score-text">
-          ${displayText}
+          ${isValNull ? '—' : '0'}
         </text>
         ${gradeSvg}
       </svg>
     `;
+
+    // Trigger smooth entrance animation after DOM mount
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        const circle = wrapper.querySelector('.score-indicator-circle');
+        if (circle) {
+          circle.setAttribute('stroke-dasharray', strokeDash);
+        }
+        const textEl = wrapper.querySelector('.score-text');
+        if (textEl && !isValNull && validScore > 0) {
+          animateCountUp(textEl, validScore, 850);
+        }
+      }, 35);
+    });
 
     return wrapper;
   }
@@ -408,7 +450,7 @@ VeriQ.core.reporter = (function() {
   // -------------------------------------------------------------------------
 
   /**
-   * Updates overall dashboard score and all module summary cards
+   * Updates overall dashboard score, module summary cards, and recent history list
    * @param {Object<string, Array<Object>>} allResults - moduleId -> results[]
    */
   function updateDashboard(allResults = {}) {
@@ -424,39 +466,132 @@ VeriQ.core.reporter = (function() {
 
     const overallStats = calcStats(allTests);
 
-    // Update Overall Score Circle
-    const overallCircleContainer = findElement('dashboard-overall-score', '#score-circle-dashboard') ||
-      findElement('dash-overall-score');
+    // Update Overall Score Circle in Hero Card
+    const overallCircleContainer = document.getElementById('dashboard-overall-score') ||
+      document.querySelector('#score-circle-dashboard, .hero-score');
 
     if (overallCircleContainer) {
       overallCircleContainer.innerHTML = '';
-      overallCircleContainer.appendChild(createScoreCircle(overallStats.score, 'lg'));
+      if (allTests.length > 0) {
+        overallCircleContainer.appendChild(createScoreCircle(overallStats.score, 'lg'));
+
+        // Add summary pills right below the score circle
+        const summaryPill = document.createElement('div');
+        summaryPill.className = 'hero-score-breakdown';
+        summaryPill.style.cssText = 'margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; font-size: 12px; font-weight: 600;';
+        summaryPill.innerHTML = `
+          <span style="color: #10B981; background: rgba(16, 185, 129, 0.15); padding: 4px 10px; border-radius: 9999px;">✓ ${overallStats.pass} Pass</span>
+          <span style="color: #F59E0B; background: rgba(245, 158, 11, 0.15); padding: 4px 10px; border-radius: 9999px;">⚠ ${overallStats.warn} Warn</span>
+          <span style="color: #EF4444; background: rgba(239, 68, 68, 0.15); padding: 4px 10px; border-radius: 9999px;">✕ ${overallStats.fail} Fail</span>
+        `;
+        overallCircleContainer.appendChild(summaryPill);
+      } else {
+        overallCircleContainer.innerHTML = '<div class="score-circle-placeholder">No tests run yet</div>';
+      }
     }
-
-    // Update Dashboard Counts
-    const totalEl = findElement('dash-total-tests', '#stat-total-dashboard');
-    const passEl = findElement('dash-pass-count', '#stat-pass-dashboard');
-    const failEl = findElement('dash-fail-count', '#stat-fail-dashboard');
-    const warnEl = findElement('dash-warn-count', '#stat-warn-dashboard');
-
-    if (totalEl) totalEl.textContent = overallStats.total.toString();
-    if (passEl) passEl.textContent = overallStats.pass.toString();
-    if (failEl) failEl.textContent = overallStats.fail.toString();
-    if (warnEl) warnEl.textContent = overallStats.warn.toString();
 
     // Update individual module cards on Dashboard
     for (const [modId, score] of Object.entries(moduleScores)) {
-      const scoreBadge = findElement(`dash-score-${modId}`, `[data-dash-score="${modId}"]`);
+      const results = allResults[modId] || [];
+      const stats = calcStats(results);
+      const grade = utils.scoreToGrade(score);
+      const scoreColor = utils.scoreToColor(score);
+
+      // Score badge container in index.html: id="score-${modId}" or inside [data-module="${modId}"]
+      const scoreBadge = document.getElementById(`score-${modId}`) ||
+        document.querySelector(`[data-module="${modId}"] .cat-score`);
+
       if (scoreBadge) {
-        scoreBadge.textContent = `${score}%`;
-        scoreBadge.style.color = utils.scoreToColor(score);
+        scoreBadge.innerHTML = `
+          <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 3px;">
+            <span class="score-badge" style="background: ${scoreColor}18; color: ${scoreColor}; border: 1.5px solid ${scoreColor}50; padding: 4px 12px; border-radius: 9999px; font-weight: 700; font-size: 13px; letter-spacing: 0.2px; display: inline-flex; align-items: center; gap: 4px;">
+              <span>${score}%</span> <small style="font-size: 11px; opacity: 0.85;">(${grade})</small>
+            </span>
+            <small style="font-size: 11px; color: #64748B; font-weight: 500;">${stats.pass}/${stats.total} passed</small>
+          </div>
+        `;
       }
 
-      const modCard = findElement(`dash-card-${modId}`, `[data-dash-card="${modId}"]`);
+      // Mark card as completed
+      const modCard = document.querySelector(`.category-card[data-module="${modId}"]`);
       if (modCard) {
-        modCard.setAttribute('data-score-grade', utils.scoreToGrade(score));
+        modCard.setAttribute('data-score-grade', grade);
+        modCard.classList.remove('testing-active');
+        modCard.classList.add('test-completed');
       }
     }
+
+    // Render Recent History cards on Dashboard
+    renderDashboardHistory();
+  }
+
+  /**
+   * Renders the recent tests list on the dashboard
+   */
+  function renderDashboardHistory() {
+    const historyList = document.getElementById('dashboard-history-list');
+    const noHistory = document.getElementById('dashboard-no-history');
+    if (!historyList || !noHistory) return;
+
+    const storage = VeriQ.core.storage;
+    const runs = storage ? storage.getRuns() : [];
+
+    if (!runs || runs.length === 0) {
+      noHistory.style.display = 'block';
+      historyList.style.display = 'none';
+      return;
+    }
+
+    noHistory.style.display = 'none';
+    historyList.style.display = 'grid';
+    historyList.style.gridTemplateColumns = 'repeat(auto-fill, minmax(320px, 1fr))';
+    historyList.style.gap = '14px';
+    historyList.style.marginTop = '12px';
+
+    const recent = runs.slice(0, 6);
+    let cardsHtml = '';
+
+    for (const run of recent) {
+      const score = Math.round(run.overallScore || 0);
+      const scoreColor = utils.scoreToColor(score);
+      const grade = utils.scoreToGrade(score);
+      const dateStr = utils.formatDate(run.timestamp);
+      const summary = run.summary || {};
+
+      cardsHtml += `
+        <div class="card recent-run-card" style="padding: 16px; border-radius: 8px; border: 1px solid #E2E8F0; background: #FFFFFF; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+            <div style="flex: 1; min-width: 0;">
+              <a href="${utils.escapeHtml(run.url)}" target="_blank" rel="noopener noreferrer" style="font-weight: 600; color: #2563EB; font-size: 14px; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block;" title="${utils.escapeHtml(run.url)}">
+                ${utils.escapeHtml(run.url)}
+              </a>
+              <div style="font-size: 11px; color: #64748B; margin-top: 2px;">${dateStr} • Duration: ${utils.formatTime(run.duration || 0)}</div>
+            </div>
+            <span style="background: ${scoreColor}18; color: ${scoreColor}; border: 1.5px solid ${scoreColor}40; padding: 4px 10px; border-radius: 9999px; font-weight: 700; font-size: 13px; white-space: nowrap;">
+              ${score}% (${grade})
+            </span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #F1F5F9; padding-top: 10px;">
+            <div style="font-size: 12px;">
+              <span style="color: #10B981; font-weight: 600;">${summary.pass || 0} Pass</span> • 
+              <span style="color: #F59E0B; font-weight: 600;">${summary.warn || 0} Warn</span> • 
+              <span style="color: #EF4444; font-weight: 600;">${summary.fail || 0} Fail</span>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button class="btn btn-sm btn-secondary btn-inspect-run" data-run-id="${run.id}" style="padding: 4px 10px; font-size: 12px; cursor: pointer;" title="Load this run to explore results">
+                Inspect
+              </button>
+              <button class="btn btn-sm btn-primary btn-rerun-target" data-run-url="${utils.escapeHtml(run.url)}" style="padding: 4px 10px; font-size: 12px; cursor: pointer;" title="Test this URL again">
+                Re-test
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    historyList.innerHTML = cardsHtml;
   }
 
   // -------------------------------------------------------------------------
@@ -474,6 +609,11 @@ VeriQ.core.reporter = (function() {
       badge.textContent = text;
       badge.className = `badge status-badge status-${type}`;
     });
+
+    const engineStatus = document.querySelector('.engine-status');
+    if (engineStatus) {
+      engineStatus.textContent = text;
+    }
   }
 
   /**
@@ -485,13 +625,19 @@ VeriQ.core.reporter = (function() {
   function updateProgress(current, total, label = '') {
     const percent = total > 0 ? Math.min(100, Math.round((current / total) * 100)) : 0;
 
-    const progressBars = document.querySelectorAll('#test-progress-bar, .test-progress-bar-fill');
+    // Show progress wrapper
+    const progressWrapper = document.getElementById('progress-wrapper');
+    if (progressWrapper) {
+      progressWrapper.style.display = 'block';
+    }
+
+    const progressBars = document.querySelectorAll('#progress-bar-fill, .progress-bar-fill, #test-progress-bar');
     progressBars.forEach(bar => {
       bar.style.width = `${percent}%`;
       bar.setAttribute('aria-valuenow', percent);
     });
 
-    const labels = document.querySelectorAll('#test-progress-label, #test-progress-text');
+    const labels = document.querySelectorAll('#progress-text, .progress-text, #test-progress-label');
     labels.forEach(el => {
       el.textContent = label || `${percent}% (${current}/${total})`;
     });

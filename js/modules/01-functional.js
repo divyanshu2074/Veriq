@@ -34,25 +34,24 @@ window.VeriQ.modules = window.VeriQ.modules || {};
   }
 
   async function fetchViaProxy(url, timeoutMs = 7000) {
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
-
-    try {
-      const resp = await fetch(proxyUrl, { signal: controller.signal });
-      clearTimeout(timer);
-      if (!resp.ok) {
-        return { ok: false, status: resp.status, contents: null, error: `HTTP ${resp.status}` };
+    if (window.VeriQ && window.VeriQ.core && window.VeriQ.core.fetcher) {
+      try {
+        const res = await window.VeriQ.core.fetcher.fetch(url, { timeout: timeoutMs });
+        return {
+          ok: res.status >= 200 && res.status < 400,
+          status: res.status,
+          contents: res.body || '',
+          headers: res.headers || {},
+          raw: res
+        };
+      } catch (e) {
+        return { ok: false, status: 0, contents: '', error: e.message };
       }
-      const data = await resp.json();
-      return {
-        ok: true,
-        status: data.status ? data.status.http_code : 200,
-        contents: data.contents || '',
-        raw: data
-      };
+    }
+    try {
+      const resp = await fetch(url, { mode: 'no-cors' });
+      return { ok: true, status: 200, contents: '', raw: resp };
     } catch (err) {
-      clearTimeout(timer);
       return { ok: false, status: 0, contents: null, error: err.message };
     }
   }
