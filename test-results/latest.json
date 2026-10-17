@@ -1,6 +1,6 @@
 {
   "targetUrl": "https://example.com",
-  "timestamp": "2026-10-17T10:08:08.255Z",
+  "timestamp": "2026-10-17T14:56:16.695Z",
   "summary": {
     "total": 6,
     "passed": 4,
@@ -16,9 +16,9 @@
       "details": {
         "httpStatus": 200,
         "statusText": "OK",
-        "durationMs": 86
+        "durationMs": 113
       },
-      "summary": "Online: HTTP 200 (86ms)"
+      "summary": "Online: HTTP 200 (113ms)"
     },
     {
       "id": "ssl",
@@ -28,10 +28,10 @@
       "details": {
         "issuer": "SSL Corporation",
         "validTo": "Dec 25 22:56:35 2026 GMT",
-        "daysRemaining": 70,
+        "daysRemaining": 69,
         "authorized": true
       },
-      "summary": "Valid SSL certificate (70 days remaining, issued by SSL Corporation)"
+      "summary": "Valid SSL certificate (69 days remaining, issued by SSL Corporation)"
     },
     {
       "id": "security-headers",
@@ -68,13 +68,13 @@
       "score": 100,
       "details": {
         "pings": [
-          19,
-          15,
-          16
+          25,
+          26,
+          25
         ],
-        "averageMs": 17
+        "averageMs": 25
       },
-      "summary": "Fast and reliable: 3/3 pings successful, average 17ms"
+      "summary": "Fast and reliable: 3/3 pings successful, average 25ms"
     },
     {
       "id": "browser-smoke",
