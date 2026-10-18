@@ -1,0 +1,92 @@
+{
+  "targetUrl": "https://example.com",
+  "timestamp": "2026-10-18T20:05:08.857Z",
+  "summary": {
+    "total": 6,
+    "passed": 4,
+    "failed": 1,
+    "warnings": 1
+  },
+  "tests": [
+    {
+      "id": "availability",
+      "name": "Website Availability",
+      "status": "pass",
+      "score": 100,
+      "details": {
+        "httpStatus": 200,
+        "statusText": "OK",
+        "durationMs": 101
+      },
+      "summary": "Online: HTTP 200 (101ms)"
+    },
+    {
+      "id": "ssl",
+      "name": "SSL/TLS Certificate",
+      "status": "pass",
+      "score": 100,
+      "details": {
+        "issuer": "SSL Corporation",
+        "validTo": "Dec 25 22:56:35 2026 GMT",
+        "daysRemaining": 68,
+        "authorized": true
+      },
+      "summary": "Valid SSL certificate (68 days remaining, issued by SSL Corporation)"
+    },
+    {
+      "id": "security-headers",
+      "name": "Security Headers Audit",
+      "status": "fail",
+      "score": 0,
+      "details": {
+        "present": [],
+        "missing": [
+          "strict-transport-security",
+          "content-security-policy",
+          "x-frame-options",
+          "x-content-type-options",
+          "referrer-policy"
+        ]
+      },
+      "summary": "Critical security headers missing: strict-transport-security, content-security-policy, x-frame-options, x-content-type-options, referrer-policy"
+    },
+    {
+      "id": "crawl-files",
+      "name": "Sitemap & Robots.txt",
+      "status": "warn",
+      "score": 40,
+      "details": {
+        "robotsStatus": 404,
+        "sitemapStatus": 404
+      },
+      "summary": "Neither robots.txt nor sitemap.xml found at standard paths"
+    },
+    {
+      "id": "latency",
+      "name": "Response Time Consistency (3 Pings)",
+      "status": "pass",
+      "score": 100,
+      "details": {
+        "pings": [
+          18,
+          24,
+          21
+        ],
+        "averageMs": 21
+      },
+      "summary": "Fast and reliable: 3/3 pings successful, average 21ms"
+    },
+    {
+      "id": "browser-smoke",
+      "name": "Headless Browser Smoke Test",
+      "status": "pass",
+      "score": 100,
+      "details": {
+        "pageTitle": "Example Domain",
+        "consoleErrorCount": 0,
+        "consoleErrors": []
+      },
+      "summary": "Page loaded cleanly: \"Example Domain\", 0 client console errors"
+    }
+  ]
+}
