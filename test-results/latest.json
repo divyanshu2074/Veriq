@@ -1,6 +1,6 @@
 {
   "targetUrl": "https://example.com",
-  "timestamp": "2026-10-19T03:12:20.048Z",
+  "timestamp": "2026-10-19T06:02:04.325Z",
   "summary": {
     "total": 6,
     "passed": 4,
@@ -16,9 +16,9 @@
       "details": {
         "httpStatus": 200,
         "statusText": "OK",
-        "durationMs": 79
+        "durationMs": 124
       },
-      "summary": "Online: HTTP 200 (79ms)"
+      "summary": "Online: HTTP 200 (124ms)"
     },
     {
       "id": "ssl",
@@ -68,13 +68,13 @@
       "score": 100,
       "details": {
         "pings": [
-          9,
-          9,
-          10
+          21,
+          16,
+          15
         ],
-        "averageMs": 9
+        "averageMs": 17
       },
-      "summary": "Fast and reliable: 3/3 pings successful, average 9ms"
+      "summary": "Fast and reliable: 3/3 pings successful, average 17ms"
     },
     {
       "id": "browser-smoke",
