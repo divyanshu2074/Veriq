@@ -3,611 +3,257 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="VeriQ - Professional automated 148 website testing suite. Comprehensive browser-based evaluation for functionality, performance, security, SEO, accessibility, and modern web standards.">
-  <title>VeriQ - Automated 148 Website Testing Suite</title>
+  <title>VeriQ 2.0 - Complete 148 Software Testing Tools Suite</title>
+  <meta name="description" content="VeriQ 2.0: 148 independent, specialized software testing tools with customized inputs, instant diagnostics, and hybrid backend execution.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <div id="app">
-    <!-- Mobile Hamburger Toggle -->
-    <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle navigation" aria-expanded="false">
-      <span class="hamburger-bar"></span>
-      <span class="hamburger-bar"></span>
-      <span class="hamburger-bar"></span>
-    </button>
-
-    <!-- Sidebar Backdrop for Mobile -->
-    <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
-
-    <!-- Fixed Sidebar -->
+  <div id="app" class="app-container">
+    <!-- Sidebar -->
     <aside id="sidebar" class="sidebar">
-      <div id="sidebar-logo-area" class="sidebar-logo-area">
-        <div class="logo-mark">🛡️</div>
-        <div class="logo-text">
-          <span class="logo-title">VeriQ</span>
-          <span class="logo-tag">148 TEST SUITE</span>
-        </div>
+      <div class="sidebar-header">
+        <a href="#catalog" class="sidebar-logo">
+          <span class="logo-shield">🛡️</span>
+          <div class="logo-text">
+            <h2>VeriQ <span>2.0</span></h2>
+            <small>148 Testing Tools Hub</small>
+          </div>
+        </a>
       </div>
 
-      <nav id="sidebar-nav" class="sidebar-nav" aria-label="Main Navigation">
-        <a href="#dashboard" data-page="dashboard" class="nav-item active">🏠 Dashboard</a>
-        <a href="#matrix-148" data-page="matrix-148" class="nav-item">🌟 All 148 Tests Matrix</a>
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">SUITE DIRECTORY</div>
+        <a href="#catalog" class="nav-item active"><span class="nav-icon">📦</span> 148 Tools Catalog</a>
         
-        <div class="nav-divider">148 TEST SUITES</div>
-        <a href="#cat-a-functional" data-page="cat-a-functional" class="nav-item">🔧 Cat A: Functional (35)</a>
-        <a href="#cat-b-nonfunctional" data-page="cat-b-nonfunctional" class="nav-item">⚡ Cat B: Non-Functional (39)</a>
-        <a href="#cat-c-security" data-page="cat-c-security" class="nav-item">🔒 Cat C: Security (22)</a>
-        <a href="#cat-d-webspecific" data-page="cat-d-webspecific" class="nav-item">🌐 Cat D: Web-Specific (29)</a>
-        <a href="#cat-e-specialized" data-page="cat-e-specialized" class="nav-item">🔬 Cat E: Specialized (23)</a>
-        
-        <div class="nav-divider">REPORTS &amp; CONFIG</div>
-        <a href="#history" data-page="history" class="nav-item">📊 History</a>
-        <a href="#settings" data-page="settings" class="nav-item">⚙️ Settings</a>
+        <div class="nav-section-title">CATEGORIES</div>
+        <a href="#category-a" class="nav-item"><span class="nav-icon">🧪</span> Cat A: Functional <span class="nav-badge">35</span></a>
+        <a href="#category-b" class="nav-item"><span class="nav-icon">⚡</span> Cat B: Non-Functional <span class="nav-badge">39</span></a>
+        <a href="#category-c" class="nav-item"><span class="nav-icon">🔒</span> Cat C: Security <span class="nav-badge">22</span></a>
+        <a href="#category-d" class="nav-item"><span class="nav-icon">🌐</span> Cat D: Web-Specific <span class="nav-badge">29</span></a>
+        <a href="#category-e" class="nav-item"><span class="nav-icon">🔬</span> Cat E: Specialized <span class="nav-badge">23</span></a>
+
+        <div class="nav-section-title">RECORDS & CONFIG</div>
+        <a href="#history" class="nav-item"><span class="nav-icon">📊</span> Execution History</a>
+        <a href="#settings" class="nav-item"><span class="nav-icon">⚙️</span> Settings & Backend</a>
       </nav>
 
-      <div id="sidebar-footer" class="sidebar-footer">
-        <div class="version-info">
-          <span class="status-indicator online"></span>
-          <span class="version-label">VeriQ 148 v2.0</span>
+      <div class="sidebar-footer">
+        <div class="footer-status">
+          <small>Engine: Deterministic Algorithms</small>
+          <small>Zero AI / Zero LLM Overhead</small>
         </div>
-        <div class="engine-status">Engine Ready</div>
       </div>
     </aside>
 
-    <!-- Main Wrapper -->
-    <div id="main-wrapper" class="main-wrapper">
-      <!-- Sticky URL Bar -->
-      <header id="url-bar" class="url-bar">
-        <form id="url-form" class="url-form" onsubmit="return false;">
-          <div class="url-input-container">
-            <span class="url-prefix-icon">🔗</span>
-            <input 
-              type="url" 
-              id="target-url" 
-              name="target-url" 
-              class="target-url-input" 
-              placeholder="https://example.com" 
-              autocomplete="url" 
-              spellcheck="false" 
-              required
-            >
-          </div>
-          <div class="url-actions">
-            <button type="submit" id="btn-run-all" class="btn btn-primary btn-run-all">
-              <span class="btn-icon">▶</span>
-              <span class="btn-text">Run All 148 Tests</span>
-            </button>
-            <button type="button" id="btn-run-category" class="btn btn-secondary btn-run-category">
-              <span class="btn-icon">⚡</span>
-              <span class="btn-text">Run Current Suite</span>
-            </button>
-          </div>
-        </form>
-
-        <!-- Animated progress wrapper -->
-        <div id="progress-wrapper" class="progress-wrapper" style="display:none">
-          <div class="progress-bar-track">
-            <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%"></div>
-          </div>
-          <div id="progress-text" class="progress-text">Ready</div>
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      <!-- Top Navigation Header -->
+      <header class="top-header">
+        <div class="header-search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="global-search-input" placeholder="Search across all 148 testing tools by number (#1-#148), name, or purpose..." autocomplete="off">
         </div>
 
-        <!-- Live Process HUD Banner -->
-        <div id="live-process-hud" class="live-process-hud" style="display:none">
-          <div class="hud-left">
-            <span class="hud-spinner"></span>
-            <span class="hud-live-tag">SCANNING</span>
-            <span id="hud-step-text" class="hud-step-pill">[1/148]</span>
-            <span id="hud-test-title" class="hud-title">Connecting to target website...</span>
+        <div class="header-right-actions">
+          <div id="backend-status-pill" class="backend-pill pill-offline" title="Checking server status...">
+            🟡 Checking Backend...
           </div>
-          <div class="hud-right">
-            <span id="hud-progress-percent" class="hud-percent">0%</span>
-          </div>
+          <a href="#settings" class="btn-icon" title="Configure Backend & Settings">⚙️</a>
         </div>
       </header>
 
-      <!-- Content Area with All Pages -->
-      <main id="content-area" class="content-area">
-
-        <!-- ================= PAGE: DASHBOARD ================= -->
-        <div class="page active" data-page="dashboard">
-          <!-- Welcome Hero Card -->
-          <div class="hero-card">
-            <div class="hero-content">
-              <h1>Welcome to VeriQ 🛡️</h1>
-              <p>Professional automated testing across all 148 industry testing types. 100% browser-based, zero AI hallucination, and privacy-first.</p>
-              <div class="hero-steps">
-                <div class="step"><span class="step-num">1</span><span>Enter target website URL above</span></div>
-                <div class="step"><span class="step-num">2</span><span>Run all 148 tests or pick a specific suite</span></div>
-                <div class="step"><span class="step-num">3</span><span>Explore diagnostics, scores &amp; fix recommendations</span></div>
-              </div>
-            </div>
-            <div class="hero-score" id="dashboard-overall-score">
-              <div class="score-circle-placeholder">No tests run yet</div>
-            </div>
-          </div>
-
-          <!-- Featured 148 Tests Matrix Banner -->
-          <div class="matrix-featured-card" onclick="location.hash='#matrix-148'">
-            <div class="matrix-featured-left">
-              <h3>🌟 Complete 148 Tests Matrix &amp; Search</h3>
-              <p>Filter, search, and inspect all 148 individual software testing types organized into Categories A through E with real-time diagnostics.</p>
-              <div class="matrix-stat-pills">
-                <span class="matrix-badge-chip">35 Functional</span>
-                <span class="matrix-badge-chip">39 Non-Functional</span>
-                <span class="matrix-badge-chip">22 Security</span>
-                <span class="matrix-badge-chip">29 Web-Specific</span>
-                <span class="matrix-badge-chip">23 Specialized</span>
-              </div>
-            </div>
-            <button class="btn btn-primary" style="white-space: nowrap; font-weight: 700;">Explore All 148 →</button>
-          </div>
-
-          <!-- Category Grid -->
-          <h2 class="section-title">Test Categories (148 Total)</h2>
-          <div class="category-grid" id="dashboard-category-grid">
-            
-            <!-- Category A -->
-            <div class="category-card" data-module="cat-a-functional" data-color="#3B82F6">
-              <div class="cat-icon">🔧</div>
-              <div class="cat-info">
-                <div class="cat-name">Category A: Functional</div>
-                <div class="cat-desc">35 Tests (#1 to #35): Unit, Component, Integration, System, E2E, Forms, Logic</div>
-              </div>
-              <div class="cat-score" id="score-cat-a-functional"><span class="no-data">—</span></div>
-            </div>
-
-            <!-- Category B -->
-            <div class="category-card" data-module="cat-b-nonfunctional" data-color="#F59E0B">
-              <div class="cat-icon">⚡</div>
-              <div class="cat-info">
-                <div class="cat-name">Category B: Non-Functional</div>
-                <div class="cat-desc">39 Tests (#36 to #74): Performance, Load, Stress, Latency, Usability, WCAG, Memory</div>
-              </div>
-              <div class="cat-score" id="score-cat-b-nonfunctional"><span class="no-data">—</span></div>
-            </div>
-
-            <!-- Category C -->
-            <div class="category-card" data-module="cat-c-security" data-color="#DC2626">
-              <div class="cat-icon">🔒</div>
-              <div class="cat-info">
-                <div class="cat-name">Category C: Security</div>
-                <div class="cat-desc">22 Tests (#75 to #96): OWASP, Penetration, Auth, Headers, XSS, CSRF, TLS, Secrets</div>
-              </div>
-              <div class="cat-score" id="score-cat-c-security"><span class="no-data">—</span></div>
-            </div>
-
-            <!-- Category D -->
-            <div class="category-card" data-module="cat-d-webspecific" data-color="#0EA5E9">
-              <div class="cat-icon">🌐</div>
-              <div class="cat-info">
-                <div class="cat-name">Category D: Web-Specific</div>
-                <div class="cat-desc">29 Tests (#97 to #125): Availability, Redirects, Links, Media, SEO, Schema, PWA</div>
-              </div>
-              <div class="cat-score" id="score-cat-d-webspecific"><span class="no-data">—</span></div>
-            </div>
-
-            <!-- Category E -->
-            <div class="category-card" data-module="cat-e-specialized" data-color="#8B5CF6">
-              <div class="cat-icon">🔬</div>
-              <div class="cat-info">
-                <div class="cat-name">Category E: Specialized</div>
-                <div class="cat-desc">23 Tests (#126 to #148): Automation, Static Analysis, Mutation, Coverage, CI/CD, Chaos</div>
-              </div>
-              <div class="cat-score" id="score-cat-e-specialized"><span class="no-data">—</span></div>
-            </div>
-
-          </div>
-
-          <!-- Recent History -->
-          <h2 class="section-title">Recent Test Runs</h2>
-          <div id="dashboard-history">
-            <div class="empty-state" id="dashboard-no-history">
-              <div class="empty-icon">📋</div>
-              <div class="empty-title">No test runs recorded yet</div>
-              <div class="empty-desc">Enter a URL above and click "Run All 148 Tests" to begin automated testing</div>
-            </div>
-            <div id="dashboard-history-list" class="history-list" style="display:none"></div>
+      <!-- View 1: 148 Tools Catalog -->
+      <main id="view-catalog" class="main-view page-catalog">
+        <div class="catalog-hero">
+          <div class="catalog-hero-text">
+            <h1>148 Independent Software Testing Tools</h1>
+            <p>Every tool is built with specialized input parameters, instant 1-click test data, and deep automated diagnostic checks. Run client-side or accelerate with the local Node.js backend.</p>
           </div>
         </div>
 
-        <!-- ================= PAGE: UNIFIED 148 MATRIX ================= -->
-        <div class="page" data-page="matrix-148">
-          <div class="page-header">
-            <div class="page-header-left">
-              <div class="page-icon" style="background: #EEF2FF; color: #4F46E5;">🌟</div>
-              <div>
-                <h1 class="page-title">Unified 148 Software Testing Matrix</h1>
-                <p class="page-desc">Complete index of all 148 software testing types. Search by number (#1 to #148) or keyword, filter by category or status.</p>
-              </div>
-            </div>
-            <div class="page-header-right">
-              <button class="btn btn-primary" onclick="VeriQ.core.app.runAll()">▶ Run All 148 Tests</button>
-            </div>
+        <div class="catalog-filters-bar">
+          <div class="cat-tabs-group">
+            <button class="cat-tab-btn active" data-cat="all">All Tools (148)</button>
+            <button class="cat-tab-btn" data-cat="A">A. Functional (35)</button>
+            <button class="cat-tab-btn" data-cat="B">B. Non-Functional (39)</button>
+            <button class="cat-tab-btn" data-cat="C">C. Security (22)</button>
+            <button class="cat-tab-btn" data-cat="D">D. Web-Specific (29)</button>
+            <button class="cat-tab-btn" data-cat="E">E. Specialized (23)</button>
           </div>
 
-          <!-- Matrix Search & Filter Header -->
-          <div class="matrix-filter-header">
-            <div class="matrix-search-wrapper">
-              <span class="matrix-search-icon">🔍</span>
-              <input type="search" id="matrix-search" class="matrix-search-input" placeholder="Search by test number (#38), name (Spike, XSS), purpose, or summary...">
-            </div>
-
-            <div class="matrix-pill-groups">
-              <!-- Category Filter Row -->
-              <div class="matrix-pill-row">
-                <span class="matrix-pill-label">Category:</span>
-                <button class="matrix-pill matrix-cat-pill active" data-cat="all">All Categories (<span id="matrix-stat-total">148</span>)</button>
-                <button class="matrix-pill matrix-cat-pill" data-cat="cat-a-functional">Cat A: Functional (35)</button>
-                <button class="matrix-pill matrix-cat-pill" data-cat="cat-b-nonfunctional">Cat B: Non-Functional (39)</button>
-                <button class="matrix-pill matrix-cat-pill" data-cat="cat-c-security">Cat C: Security (22)</button>
-                <button class="matrix-pill matrix-cat-pill" data-cat="cat-d-webspecific">Cat D: Web-Specific (29)</button>
-                <button class="matrix-pill matrix-cat-pill" data-cat="cat-e-specialized">Cat E: Specialized (23)</button>
-              </div>
-
-              <!-- Status Filter Row -->
-              <div class="matrix-pill-row">
-                <span class="matrix-pill-label">Status:</span>
-                <button class="matrix-pill matrix-status-pill active" data-status="all">All Statuses</button>
-                <button class="matrix-pill matrix-status-pill" data-status="pass">Passed</button>
-                <button class="matrix-pill matrix-status-pill" data-status="warn">Warnings</button>
-                <button class="matrix-pill matrix-status-pill" data-status="fail">Failed</button>
-                <button class="matrix-pill matrix-status-pill" data-status="info">Info</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Matrix Test Cards Grid -->
-          <div class="tests-container" id="matrix-148-container">
-            <div class="empty-state">
-              <div class="empty-icon">🌟</div>
-              <div class="empty-title">All 148 Tests Ready</div>
-              <div class="empty-desc">Click "Run All 148 Tests" above to execute all 148 tests against the target website.</div>
-            </div>
+          <div class="mode-filters-group">
+            <button class="mode-filter-btn active" data-mode="all">All Modes</button>
+            <button class="mode-filter-btn" data-mode="client">⚡ Browser Native</button>
+            <button class="mode-filter-btn" data-mode="server">🖥️ Backend Accelerated</button>
           </div>
         </div>
 
-        <!-- ================= PAGE: CATEGORY A (FUNCTIONAL) ================= -->
-        <div class="page" data-page="cat-a-functional">
-          <div class="page-header">
-            <div class="page-header-left">
-              <div class="page-icon" style="background: #EFF6FF; color: #3B82F6;">🔧</div>
-              <div>
-                <h1 class="page-title">Category A: Functional Testing</h1>
-                <p class="page-desc">Tests 1 to 35: Unit, Component, Integration, System, E2E, UAT, Forms, Workflows, Validation, and Business Logic.</p>
-              </div>
+        <div class="catalog-header-meta">
+          <span id="catalog-results-count" class="results-count">Showing 148 of 148 Tools</span>
+        </div>
+
+        <!-- Catalog Grid -->
+        <div id="tools-catalog-grid" class="tools-grid">
+          <!-- Injected dynamically by app.js -->
+        </div>
+      </main>
+
+      <!-- View 2: Interactive Dedicated Tool Workspace -->
+      <main id="view-tool-workspace" class="main-view page-workspace" style="display: none;">
+        <div class="workspace-breadcrumbs">
+          <a href="#catalog">Tools Catalog</a>
+          <span>/</span>
+          <a id="ws-breadcrumb-cat" href="#catalog">Category</a>
+          <span>/</span>
+          <span id="ws-breadcrumb-tool" class="current-crumb">Active Tool</span>
+        </div>
+
+        <div class="tool-banner-card">
+          <div class="tool-banner-left">
+            <div class="tool-banner-badge-group">
+              <span id="ws-tool-num" class="ws-num-badge">#001</span>
+              <span id="ws-tool-category" class="ws-cat-pill">Category A: Functional Testing</span>
+              <span id="ws-tool-mode" class="tool-mode-pill mode-client">⚡ Browser Native</span>
             </div>
-            <div class="page-header-right">
-              <div class="score-circle-container" id="score-circle-cat-a-functional"></div>
-              <button class="btn btn-primary" id="btn-run-cat-a-functional" data-module="cat-a-functional">🔧 Run Functional Suite (35)</button>
+            <div class="tool-banner-title-area">
+              <span id="ws-tool-icon" class="ws-icon">🧪</span>
+              <h1 id="ws-tool-name">Unit Testing</h1>
             </div>
+            <p id="ws-tool-purpose" class="ws-purpose-text">Tests individual functions or components in isolation.</p>
           </div>
 
-          <div class="stats-row" id="stats-cat-a-functional">
-            <div class="stat-card"><div class="stat-num" id="stat-total-cat-a-functional">35</div><div class="stat-label">Total Tests</div></div>
-            <div class="stat-card stat-pass"><div class="stat-num" id="stat-pass-cat-a-functional">—</div><div class="stat-label">Passed</div></div>
-            <div class="stat-card stat-fail"><div class="stat-num" id="stat-fail-cat-a-functional">—</div><div class="stat-label">Failed</div></div>
-            <div class="stat-card stat-warn"><div class="stat-num" id="stat-warn-cat-a-functional">—</div><div class="stat-label">Warnings</div></div>
-          </div>
-
-          <div class="tests-filter-bar">
-            <div class="filter-btns">
-              <button class="filter-btn active" data-filter="all">All</button>
-              <button class="filter-btn" data-filter="fail">Failed</button>
-              <button class="filter-btn" data-filter="warn">Warnings</button>
-              <button class="filter-btn" data-filter="pass">Passed</button>
-            </div>
-          </div>
-
-          <div class="tests-container" id="tests-cat-a-functional">
-            <div class="empty-state">
-              <div class="empty-icon">🔧</div>
-              <div class="empty-title">Category A Ready</div>
-              <div class="empty-desc">Click "Run Functional Suite" above to evaluate Tests #1 to #35.</div>
-            </div>
+          <div class="tool-banner-actions">
+            <button class="btn btn-secondary" onclick="VeriQ.app.loadSampleData()">✨ Load Sample Data</button>
+            <button class="btn btn-secondary" onclick="VeriQ.app.resetForm()">🔄 Reset</button>
           </div>
         </div>
 
-        <!-- ================= PAGE: CATEGORY B (NON-FUNCTIONAL) ================= -->
-        <div class="page" data-page="cat-b-nonfunctional">
-          <div class="page-header">
-            <div class="page-header-left">
-              <div class="page-icon" style="background: #FFFBEB; color: #F59E0B;">⚡</div>
-              <div>
-                <h1 class="page-title">Category B: Non-Functional Testing</h1>
-                <p class="page-desc">Tests 36 to 74: Performance, Load, Stress, Spike, Latency, Memory Leaks, WCAG Accessibility, Usability, and Resilience.</p>
+        <!-- 2-Column Split Workspace -->
+        <div class="workspace-grid">
+          <!-- Left Column: Tool Input Requirements -->
+          <div class="workspace-inputs-column">
+            <div class="card ws-card">
+              <div class="card-header">
+                <h3>📝 Test Requirements & Inputs</h3>
+                <small>Configure required parameters for this testing type</small>
+              </div>
+              <div class="card-body">
+                <form id="ws-tool-form" onsubmit="event.preventDefault(); VeriQ.app.runCurrentTool();">
+                  <div id="ws-form-fields">
+                    <!-- Injected dynamically by app.js -->
+                  </div>
+
+                  <div class="form-actions-bar">
+                    <button type="submit" id="btn-run-tool" class="btn btn-primary btn-run">🚀 Run Test</button>
+                  </div>
+                </form>
               </div>
             </div>
-            <div class="page-header-right">
-              <div class="score-circle-container" id="score-circle-cat-b-nonfunctional"></div>
-              <button class="btn btn-primary" id="btn-run-cat-b-nonfunctional" data-module="cat-b-nonfunctional">⚡ Run Non-Functional Suite (39)</button>
-            </div>
           </div>
 
-          <div class="stats-row" id="stats-cat-b-nonfunctional">
-            <div class="stat-card"><div class="stat-num" id="stat-total-cat-b-nonfunctional">39</div><div class="stat-label">Total Tests</div></div>
-            <div class="stat-card stat-pass"><div class="stat-num" id="stat-pass-cat-b-nonfunctional">—</div><div class="stat-label">Passed</div></div>
-            <div class="stat-card stat-fail"><div class="stat-num" id="stat-fail-cat-b-nonfunctional">—</div><div class="stat-label">Failed</div></div>
-            <div class="stat-card stat-warn"><div class="stat-num" id="stat-warn-cat-b-nonfunctional">—</div><div class="stat-label">Warnings</div></div>
-          </div>
-
-          <div class="tests-filter-bar">
-            <div class="filter-btns">
-              <button class="filter-btn active" data-filter="all">All</button>
-              <button class="filter-btn" data-filter="fail">Failed</button>
-              <button class="filter-btn" data-filter="warn">Warnings</button>
-              <button class="filter-btn" data-filter="pass">Passed</button>
-            </div>
-          </div>
-
-          <div class="tests-container" id="tests-cat-b-nonfunctional">
-            <div class="empty-state">
-              <div class="empty-icon">⚡</div>
-              <div class="empty-title">Category B Ready</div>
-              <div class="empty-desc">Click "Run Non-Functional Suite" above to evaluate Tests #36 to #74.</div>
+          <!-- Right Column: Live Results & Diagnostics -->
+          <div class="workspace-results-column">
+            <div id="ws-results-container" class="results-container">
+              <!-- Injected dynamically by app.js (idle, running, or completed card) -->
             </div>
           </div>
         </div>
+      </main>
 
-        <!-- ================= PAGE: CATEGORY C (SECURITY) ================= -->
-        <div class="page" data-page="cat-c-security">
-          <div class="page-header">
-            <div class="page-header-left">
-              <div class="page-icon" style="background: #FEF2F2; color: #DC2626;">🔒</div>
-              <div>
-                <h1 class="page-title">Category C: Security Testing</h1>
-                <p class="page-desc">Tests 75 to 96: OWASP Top 10, Vulnerability Scanning, Headers, XSS Sinks, CSRF, TLS/SSL, Cookies, and Secrets Exposure.</p>
-              </div>
-            </div>
-            <div class="page-header-right">
-              <div class="score-circle-container" id="score-circle-cat-c-security"></div>
-              <button class="btn btn-primary" id="btn-run-cat-c-security" data-module="cat-c-security">🔒 Run Security Suite (22)</button>
-            </div>
+      <!-- View 3: Execution History -->
+      <main id="view-history" class="main-view page-history" style="display: none;">
+        <div class="page-title-row">
+          <div>
+            <h1>📊 Test Execution History</h1>
+            <p>Recent tool verification runs stored locally in your browser.</p>
           </div>
-
-          <div class="stats-row" id="stats-cat-c-security">
-            <div class="stat-card"><div class="stat-num" id="stat-total-cat-c-security">22</div><div class="stat-label">Total Tests</div></div>
-            <div class="stat-card stat-pass"><div class="stat-num" id="stat-pass-cat-c-security">—</div><div class="stat-label">Passed</div></div>
-            <div class="stat-card stat-fail"><div class="stat-num" id="stat-fail-cat-c-security">—</div><div class="stat-label">Failed</div></div>
-            <div class="stat-card stat-warn"><div class="stat-num" id="stat-warn-cat-c-security">—</div><div class="stat-label">Warnings</div></div>
-          </div>
-
-          <div class="tests-filter-bar">
-            <div class="filter-btns">
-              <button class="filter-btn active" data-filter="all">All</button>
-              <button class="filter-btn" data-filter="fail">Failed</button>
-              <button class="filter-btn" data-filter="warn">Warnings</button>
-              <button class="filter-btn" data-filter="pass">Passed</button>
-            </div>
-          </div>
-
-          <div class="tests-container" id="tests-cat-c-security">
-            <div class="empty-state">
-              <div class="empty-icon">🔒</div>
-              <div class="empty-title">Category C Ready</div>
-              <div class="empty-desc">Click "Run Security Suite" above to evaluate Tests #75 to #96.</div>
-            </div>
-          </div>
+          <button class="btn btn-secondary" onclick="VeriQ.app.clearHistory()">🗑️ Clear History</button>
         </div>
 
-        <!-- ================= PAGE: CATEGORY D (WEB-SPECIFIC) ================= -->
-        <div class="page" data-page="cat-d-webspecific">
-          <div class="page-header">
-            <div class="page-header-left">
-              <div class="page-icon" style="background: #F0F9FF; color: #0EA5E9;">🌐</div>
-              <div>
-                <h1 class="page-title">Category D: Web-Specific Testing</h1>
-                <p class="page-desc">Tests 97 to 125: Availability, HTTP Status, Redirects, Broken Links, Media, HTML/CSS Validation, SEO, Cache, and PWA.</p>
-              </div>
-            </div>
-            <div class="page-header-right">
-              <div class="score-circle-container" id="score-circle-cat-d-webspecific"></div>
-              <button class="btn btn-primary" id="btn-run-cat-d-webspecific" data-module="cat-d-webspecific">🌐 Run Web-Specific Suite (29)</button>
-            </div>
+        <div class="card">
+          <div id="history-empty-state" class="empty-state">
+            <div class="empty-icon">📋</div>
+            <h3>No Test Runs Recorded Yet</h3>
+            <p>Launch any tool and click "Run Test" to log execution diagnostics here.</p>
+            <a href="#catalog" class="btn btn-primary">Browse 148 Tools</a>
           </div>
 
-          <div class="stats-row" id="stats-cat-d-webspecific">
-            <div class="stat-card"><div class="stat-num" id="stat-total-cat-d-webspecific">29</div><div class="stat-label">Total Tests</div></div>
-            <div class="stat-card stat-pass"><div class="stat-num" id="stat-pass-cat-d-webspecific">—</div><div class="stat-label">Passed</div></div>
-            <div class="stat-card stat-fail"><div class="stat-num" id="stat-fail-cat-d-webspecific">—</div><div class="stat-label">Failed</div></div>
-            <div class="stat-card stat-warn"><div class="stat-num" id="stat-warn-cat-d-webspecific">—</div><div class="stat-label">Warnings</div></div>
-          </div>
-
-          <div class="tests-filter-bar">
-            <div class="filter-btns">
-              <button class="filter-btn active" data-filter="all">All</button>
-              <button class="filter-btn" data-filter="fail">Failed</button>
-              <button class="filter-btn" data-filter="warn">Warnings</button>
-              <button class="filter-btn" data-filter="pass">Passed</button>
-            </div>
-          </div>
-
-          <div class="tests-container" id="tests-cat-d-webspecific">
-            <div class="empty-state">
-              <div class="empty-icon">🌐</div>
-              <div class="empty-title">Category D Ready</div>
-              <div class="empty-desc">Click "Run Web-Specific Suite" above to evaluate Tests #97 to #125.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ================= PAGE: CATEGORY E (SPECIALIZED) ================= -->
-        <div class="page" data-page="cat-e-specialized">
-          <div class="page-header">
-            <div class="page-header-left">
-              <div class="page-icon" style="background: #F5F3FF; color: #8B5CF6;">🔬</div>
-              <div>
-                <h1 class="page-title">Category E: Specialized &amp; Advanced Testing</h1>
-                <p class="page-desc">Tests 126 to 148: Manual Checklists, Automation Hooks, Static Code Analysis, Mutation, Coverage, CI/CD, Chaos, and Statistical Precision.</p>
-              </div>
-            </div>
-            <div class="page-header-right">
-              <div class="score-circle-container" id="score-circle-cat-e-specialized"></div>
-              <button class="btn btn-primary" id="btn-run-cat-e-specialized" data-module="cat-e-specialized">🔬 Run Specialized Suite (23)</button>
-            </div>
-          </div>
-
-          <div class="stats-row" id="stats-cat-e-specialized">
-            <div class="stat-card"><div class="stat-num" id="stat-total-cat-e-specialized">23</div><div class="stat-label">Total Tests</div></div>
-            <div class="stat-card stat-pass"><div class="stat-num" id="stat-pass-cat-e-specialized">—</div><div class="stat-label">Passed</div></div>
-            <div class="stat-card stat-fail"><div class="stat-num" id="stat-fail-cat-e-specialized">—</div><div class="stat-label">Failed</div></div>
-            <div class="stat-card stat-warn"><div class="stat-num" id="stat-warn-cat-e-specialized">—</div><div class="stat-label">Warnings</div></div>
-          </div>
-
-          <div class="tests-filter-bar">
-            <div class="filter-btns">
-              <button class="filter-btn active" data-filter="all">All</button>
-              <button class="filter-btn" data-filter="fail">Failed</button>
-              <button class="filter-btn" data-filter="warn">Warnings</button>
-              <button class="filter-btn" data-filter="pass">Passed</button>
-            </div>
-          </div>
-
-          <div class="tests-container" id="tests-cat-e-specialized">
-            <div class="empty-state">
-              <div class="empty-icon">🔬</div>
-              <div class="empty-title">Category E Ready</div>
-              <div class="empty-desc">Click "Run Specialized Suite" above to evaluate Tests #126 to #148.</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ================= PAGE: HISTORY ================= -->
-        <div class="page" data-page="history">
-          <div class="page-header-simple">
-            <h1>📊 Test History</h1>
-            <div class="page-actions">
-              <button class="btn btn-sm btn-secondary" id="btn-export-history">📥 Export All (CSV)</button>
-              <button class="btn btn-sm btn-danger" id="btn-clear-history">🗑️ Clear History</button>
-            </div>
-          </div>
-          <div class="history-filters">
-            <input type="search" id="history-search" placeholder="Search by URL or Run ID..." class="form-input">
-            <select id="history-sort" class="form-select">
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-              <option value="score-high">Highest Score</option>
-              <option value="score-low">Lowest Score</option>
-            </select>
-          </div>
-          <div id="history-table-container">
-            <div class="empty-state" id="history-empty">
-              <div class="empty-icon">📋</div>
-              <div class="empty-title">No test history saved</div>
-              <div class="empty-desc">Your executed test runs will be stored here automatically for comparison and reporting.</div>
-            </div>
-            <table class="data-table" id="history-table" style="display:none">
+          <div class="table-responsive">
+            <table id="history-table" class="data-table" style="display: none;">
               <thead>
                 <tr>
                   <th>Timestamp</th>
-                  <th>Target URL</th>
-                  <th>Overall Score</th>
-                  <th>Results Breakdown</th>
-                  <th>Actions</th>
+                  <th>Tool</th>
+                  <th>Category</th>
+                  <th>Status</th>
+                  <th>Score</th>
+                  <th>Duration</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody id="history-tbody"></tbody>
             </table>
           </div>
         </div>
+      </main>
 
-        <!-- ================= PAGE: SETTINGS ================= -->
-        <div class="page" data-page="settings">
-          <div class="page-header-simple">
-            <h1>⚙️ Settings &amp; Integrations</h1>
-          </div>
-          <div class="settings-grid">
-            <!-- Connection Settings -->
-            <div class="card settings-card">
-              <h2 class="card-title">🔌 Connection &amp; CORS Proxy</h2>
-              <p class="card-desc">VeriQ uses a privacy-preserving proxy cascade to safely evaluate cross-origin web assets directly from your browser:</p>
-              <div class="form-group">
-                <label class="form-label">Proxy Architecture</label>
-                <div class="radio-group" id="proxy-selector">
-                  <label class="radio-option"><input type="radio" name="proxy" value="allorigins" checked> allorigins.win (Fastest)</label>
-                  <label class="radio-option"><input type="radio" name="proxy" value="corsproxy"> corsproxy.io (High Reliability)</label>
-                  <label class="radio-option"><input type="radio" name="proxy" value="direct"> Direct Fetch (CORS-enabled sites)</label>
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Network Timeout</label>
-                <input type="number" id="setting-timeout" name="timeout" class="form-input form-input-sm" value="15000" min="5000" max="60000">
-                <small class="form-hint">Milliseconds before aborting slow requests (default: 15,000ms)</small>
-              </div>
-            </div>
-
-            <!-- Google Sheets Integration -->
-            <div class="card settings-card">
-              <h2 class="card-title">📊 Google Sheets Database Backend</h2>
-              <p class="card-desc">Automatically synchronize and log all 148 test results to a Google Spreadsheet backend without needing servers.</p>
-              <div class="form-group">
-                <label class="toggle-label">
-                  <input type="checkbox" id="setting-sheets-enabled" name="sheets.enabled" class="toggle-checkbox">
-                  <span class="toggle-switch"></span>
-                  Enable Google Sheets Sync
-                </label>
-              </div>
-              <div id="sheets-settings-group" class="subsettings" style="display:none">
-                <div class="form-group">
-                  <label class="form-label">Spreadsheet ID</label>
-                  <input type="text" id="setting-sheets-id" name="sheets.sheetId" class="form-input" placeholder="e.g. 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">API Key</label>
-                  <input type="password" id="setting-sheets-key" name="sheets.apiKey" class="form-input" placeholder="AIzaSy...">
-                </div>
-              </div>
-            </div>
-
-            <!-- Data Management -->
-            <div class="card settings-card">
-              <h2 class="card-title">💾 Backup &amp; Data Management</h2>
-              <p class="card-desc">Export your complete database of results or clear local test storage.</p>
-              <div class="button-group">
-                <button class="btn btn-secondary" id="btn-export-all">📥 Export All Data (JSON)</button>
-                <button class="btn btn-secondary" id="btn-import-data">📤 Import Data</button>
-                <button class="btn btn-danger" id="btn-clear-all-data">🗑️ Wipe Local Database</button>
-              </div>
-              <input type="file" id="import-file-input" accept=".json" style="display:none">
-            </div>
+      <!-- View 4: Settings & Backend -->
+      <main id="view-settings" class="main-view page-settings" style="display: none;">
+        <div class="page-title-row">
+          <div>
+            <h1>⚙️ Settings & Backend Configuration</h1>
+            <p>Manage connection to the VeriQ Node.js acceleration server.</p>
           </div>
         </div>
 
+        <div class="settings-grid">
+          <div class="card settings-card">
+            <div class="card-header">
+              <h3>🔌 Backend Server Connection</h3>
+            </div>
+            <div class="card-body">
+              <p>The VeriQ Node.js server accelerates heavy tasks (multi-user load testing, raw DNS resolution, TLS certificate socket inspection, and CORS bypass).</p>
+              
+              <div class="form-group">
+                <label class="form-label" for="settings-backend-url">Backend API Endpoint URL</label>
+                <input type="text" id="settings-backend-url" class="form-input" value="http://localhost:3000">
+                <small class="form-hint">Default local development server runs at <code>http://localhost:3000</code>.</small>
+              </div>
+
+              <div class="button-group">
+                <button class="btn btn-primary" onclick="VeriQ.app.saveSettings()">💾 Save & Test Connection</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card settings-card">
+            <div class="card-header">
+              <h3>🚀 How to Run the Local Backend</h3>
+            </div>
+            <div class="card-body">
+              <p>In your terminal inside the repository folder, execute:</p>
+              <pre class="res-code-box">npm start</pre>
+              <p>This starts the Express server on port 3000 with raw socket, TLS, DNS, and load testing APIs enabled.</p>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   </div>
 
-  <!-- Modal Overlay and Container -->
-  <div id="modal-overlay" class="modal-overlay" style="display:none">
-    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-      <div class="modal-header">
-        <h3 id="modal-title" class="modal-title"></h3>
-        <button id="modal-close" class="modal-close" aria-label="Close modal">✕</button>
-      </div>
-      <div id="modal-body" class="modal-body"></div>
-      <div id="modal-footer" class="modal-footer"></div>
-    </div>
-  </div>
+  <div id="toast-container" class="toast-container"></div>
 
-  <!-- Toast Notifications Container -->
-  <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
-
-  <!-- Scripts: Dependencies and Core Engine -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- Scripts -->
   <script src="js/core/utils.js"></script>
-  <script src="js/core/fetcher.js"></script>
   <script src="js/core/storage.js"></script>
-  <script src="js/core/reporter.js"></script>
-
-  <!-- Complete 148 Tests Modules (Categories A through E) -->
-  <script src="js/modules/cat-a-functional.js"></script>
-  <script src="js/modules/cat-b-nonfunctional.js"></script>
-  <script src="js/modules/cat-c-security.js"></script>
-  <script src="js/modules/cat-d-webspecific.js"></script>
-  <script src="js/modules/cat-e-specialized.js"></script>
-
-  <!-- Main App Controller (Loads Last) -->
+  <script src="js/tools/tools-registry.js"></script>
+  <script src="js/tools/tools-cat-a.js"></script>
+  <script src="js/tools/tools-cat-b.js"></script>
+  <script src="js/tools/tools-cat-c.js"></script>
+  <script src="js/tools/tools-cat-d.js"></script>
+  <script src="js/tools/tools-cat-e.js"></script>
+  <script src="js/core/backend-client.js"></script>
   <script src="js/core/app.js"></script>
 </body>
 </html>

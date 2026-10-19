@@ -1,0 +1,29 @@
+{
+  "name": "veriq",
+  "version": "2.0.0",
+  "description": "VeriQ - Professional 148 Independent Software Testing Tools Suite with Hybrid Execution Engine",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node tests/test-runner.js",
+    "test:backend": "node tests/backend-tests.js",
+    "test:e2e": "node tests/e2e-benchmarks.js"
+  },
+  "keywords": [
+    "testing",
+    "software-testing",
+    "qa",
+    "performance-testing",
+    "security-testing",
+    "functional-testing",
+    "api-testing",
+    "load-testing"
+  ],
+  "author": "VeriQ QA Engineering",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.1"
+  }
+}
